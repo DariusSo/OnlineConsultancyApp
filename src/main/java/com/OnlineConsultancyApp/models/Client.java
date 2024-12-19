@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -13,6 +14,10 @@ import java.time.LocalDateTime;
 @Setter
 public class Client extends User{
 
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
+    public Client(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Enum role, LocalDate birthDate) {
+        super(id, firstName, lastName, email, phone, appointmentsId, role);
+        this.birthDate = birthDate;
+    }
 }

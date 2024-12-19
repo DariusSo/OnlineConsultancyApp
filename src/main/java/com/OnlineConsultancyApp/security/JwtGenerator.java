@@ -13,7 +13,7 @@ public class JwtGenerator {
 
     private static final String SECRET_KEY = "mysecret123mysecret123mysecret12345";
 
-    public static String generateJwt(int userId) {
+    public static String generateJwt(long userId) {
         Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
         long nowMillis = System.currentTimeMillis();
