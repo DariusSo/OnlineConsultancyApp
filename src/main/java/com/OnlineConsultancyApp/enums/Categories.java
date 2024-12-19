@@ -1,5 +1,7 @@
 package com.OnlineConsultancyApp.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum Categories {
 
     FINANCIAL,
@@ -9,5 +11,11 @@ public enum Categories {
     HEALTH,
     MARKETING,
     BUSINESS,
-    OTHER
+    OTHER;
+
+
+    @JsonCreator
+    public static Categories fromString(String value) {
+        return Categories.valueOf(value.toUpperCase());
+    }
 }

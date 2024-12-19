@@ -1,5 +1,7 @@
 package com.OnlineConsultancyApp.security;
 
+import com.OnlineConsultancyApp.enums.Categories;
+import com.OnlineConsultancyApp.enums.Roles;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -21,6 +23,30 @@ public class JwtDecoder {
                 .getBody();
 
         return claims;
+    }
+
+    public static long decodedUserId(String jwt){
+        Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody();
+
+       return Long.parseLong(String.valueOf(claims.get("UserId")));
+    }
+
+    public static Roles decodedRole(String jwt){
+        Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody();
+
+        return Roles.valueOf(String.valueOf(claims.get("Role")));
     }
 
 }

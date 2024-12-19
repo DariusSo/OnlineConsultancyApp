@@ -37,7 +37,7 @@ public class ConsultantService {
         User client = consultantRepository.getAuthUser(email);
         boolean authenticated = BCrypt.checkpw(password, client.getPassword());
         if (authenticated) {
-            return JwtGenerator.generateJwt(client.getId());
+            return JwtGenerator.generateJwt(client.getId(), Roles.CONSULTANT);
         } else {
             throw new BadEmailOrPasswordException();
         }

@@ -1,5 +1,7 @@
 package com.OnlineConsultancyApp.security;
 
+import com.OnlineConsultancyApp.enums.Categories;
+import com.OnlineConsultancyApp.enums.Roles;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -13,7 +15,7 @@ public class JwtGenerator {
 
     private static final String SECRET_KEY = "mysecret123mysecret123mysecret12345";
 
-    public static String generateJwt(long userId) {
+    public static String generateJwt(long userId, Roles role) {
         Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
         long nowMillis = System.currentTimeMillis();
@@ -24,6 +26,7 @@ public class JwtGenerator {
                 .setIssuer("manokompanija.eu")
                 .setSubject("manokompanija.eu")
                 .claim("UserId", userId)
+                .claim("Role", role)
                 .claim("DateOfLogin", new java.text.SimpleDateFormat("yyyy-MM-dd").format(now))
                 .setId(UUID.randomUUID().toString())
                 .setIssuedAt(now)

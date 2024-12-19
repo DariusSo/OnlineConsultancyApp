@@ -37,7 +37,7 @@ public class AuthController {
         try{
             clientService.registerClient(client);
             return new ResponseEntity<>("Registration successful!", HttpStatus.OK);
-        }catch (UserAlreadyExistsException e){
+        } catch (UserAlreadyExistsException e){
             return new ResponseEntity<>("User with this email already exists.", HttpStatus.BAD_REQUEST);
         } catch (SQLException e) {
             return new ResponseEntity<>("Problems with database.", HttpStatus.BAD_GATEWAY);
@@ -49,13 +49,13 @@ public class AuthController {
         try{
             String token = authService.authenticate(client);
             return new ResponseEntity<>(token, HttpStatus.OK);
-        }catch (BadEmailOrPasswordException | NoSuchUserException e){
+        } catch (BadEmailOrPasswordException | NoSuchUserException e){
             return new ResponseEntity<>("Bad email or password.", HttpStatus.UNAUTHORIZED);
-        }catch (SQLException e){
+        } catch (SQLException e){
             return new ResponseEntity<>("Problems with database.", HttpStatus.BAD_GATEWAY);
-        }catch (BadRequestException e) {
+        } catch (BadRequestException e) {
             return new ResponseEntity<>("Bad parameters", HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
+        } catch (Exception e){
             return new ResponseEntity<>("Unexpected error", HttpStatus.BAD_REQUEST);
         }
     }
@@ -65,13 +65,13 @@ public class AuthController {
         try{
             String token = authService.authenticate(consultant);
             return new ResponseEntity<>(token, HttpStatus.OK);
-        }catch (BadEmailOrPasswordException e){
+        } catch (BadEmailOrPasswordException e){
             return new ResponseEntity<>("Bad email or password.", HttpStatus.UNAUTHORIZED);
-        }catch (SQLException e){
+        } catch (SQLException e){
             return new ResponseEntity<>("Problems with database.", HttpStatus.BAD_GATEWAY);
-        }catch (BadRequestException e) {
+        } catch (BadRequestException e) {
             return new ResponseEntity<>("Bad parameters", HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
+        } catch (Exception e){
             return new ResponseEntity<>("Unexpected error", HttpStatus.BAD_REQUEST);
         }
     }

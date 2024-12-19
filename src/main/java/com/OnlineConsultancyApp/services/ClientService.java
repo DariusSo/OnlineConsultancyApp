@@ -36,7 +36,7 @@ public class ClientService {
         User client = clientRepository.getAuthUser(email);
         boolean authenticated = BCrypt.checkpw(password, client.getPassword());
         if(authenticated){
-            return JwtGenerator.generateJwt(client.getId());
+            return JwtGenerator.generateJwt(client.getId(), Roles.CLIENT);
         }else{
             throw new BadEmailOrPasswordException();
         }
