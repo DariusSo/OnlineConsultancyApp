@@ -1,6 +1,7 @@
 package com.OnlineConsultancyApp.models;
 
 import com.OnlineConsultancyApp.enums.Categories;
+import com.OnlineConsultancyApp.enums.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ public class Consultant extends User{
     private String description;
     private BigDecimal hourlyRate;
 
-    public Consultant(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Enum role, String categories, String availableTime, String speciality, String description, BigDecimal hourlyRate) {
+    public Consultant(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Roles role, String categories, String availableTime, String speciality, String description, BigDecimal hourlyRate) {
         super(id, firstName, lastName, email, phone, appointmentsId, role);
         this.categories = categories;
         this.availableTime = availableTime;

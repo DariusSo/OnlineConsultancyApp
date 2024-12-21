@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.models;
 
+import com.OnlineConsultancyApp.enums.Roles;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,9 +19,9 @@ public abstract class User {
     private String phone;
     private String password;
     private String appointmentsId;
-    private Enum role;
+    private Roles role;
 
-    public User(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Enum role) {
+    public User(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Roles role) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

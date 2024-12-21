@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.models;
 
+import com.OnlineConsultancyApp.enums.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ public class Client extends User{
 
     private LocalDate birthDate;
 
-    public Client(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Enum role, LocalDate birthDate) {
+    public Client(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Roles role, LocalDate birthDate) {
         super(id, firstName, lastName, email, phone, appointmentsId, role);
         this.birthDate = birthDate;
     }

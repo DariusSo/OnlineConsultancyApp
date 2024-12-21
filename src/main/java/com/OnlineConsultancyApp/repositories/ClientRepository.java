@@ -31,7 +31,7 @@ public class ClientRepository {
         ps.setString(4, client.getPassword());
         ps.setString(5, String.valueOf(client.getRole()));
         ps.setString(6, String.valueOf(client.getBirthDate()));
-        ps.setString(6, client.getPhone());
+        ps.setString(7, client.getPhone());
         ps.execute();
 
     }
@@ -44,7 +44,7 @@ public class ClientRepository {
 
         if(rs.next()){
             User client = new Client(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
-                    rs.getString("email"), rs.getString("phone"), rs.getString("appointments_ids"), Categories.valueOf(rs.getString("role")),
+                    rs.getString("email"), rs.getString("phone"), rs.getString("appointments_ids"), Roles.valueOf(rs.getString("role")),
                     LocalDate.parse(rs.getString("birth_date")));
             return client;
         }else{

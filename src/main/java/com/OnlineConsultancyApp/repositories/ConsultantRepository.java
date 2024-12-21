@@ -13,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class ConsultantRepository {
@@ -55,6 +57,40 @@ public class ConsultantRepository {
         }
     }
 
+    public Consultant getConsultantById(long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants WHERE id = ?");
+
+        ps.setLong(1, id);
+        ResultSet rs = ps.executeQuery();
+
+        if(rs.next()){
+            Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
+                    rs.getString("email"), rs.getString("phone"), rs.getString("appointments_ids"), Roles.valueOf(rs.getString("role")),
+                    rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+            return consultant;
+        }else{
+            throw new NoSuchUserException();
+        }
+    }
+
+    public List<Consultant> getNewestConsultants() throws SQLException {
+
+        List<Consultant> consultantList = new ArrayList<>();
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants ORDER BY id DESC LIMIT 10");
+        ResultSet rs = ps.executeQuery();
+
+        while(rs.next()) {
+            Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
+                    rs.getString("email"), rs.getString("phone"), rs.getString("appointments_ids"), Roles.valueOf(rs.getString("role")),
+                    rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+            consultantList.add(consultant);
+        }
+        return consultantList;
+    }
+
+
     public User getAuthUser(String email) throws SQLException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants WHERE email = ?");
 
@@ -70,6 +106,13 @@ public class ConsultantRepository {
         }else{
             throw new BadEmailOrPasswordException();
         }
+    }
+
+    public void updateDates(String availableTime, long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("UPDATE consultants SET available_time = ? WHERE id = ?");
+        ps.setString(1, availableTime);
+        ps.setLong(2, id);
+        ps.execute();
     }
 
 }

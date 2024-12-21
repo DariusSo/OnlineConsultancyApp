@@ -40,11 +40,12 @@ public class AuthController {
         } catch (UserAlreadyExistsException e){
             return new ResponseEntity<>("User with this email already exists.", HttpStatus.BAD_REQUEST);
         } catch (SQLException e) {
+            e.printStackTrace();
             return new ResponseEntity<>("Problems with database.", HttpStatus.BAD_GATEWAY);
         }
     }
 
-    @GetMapping("/client")
+    @PostMapping("/login/client")
     public ResponseEntity<String> login(@RequestBody Client client){
         try{
             String token = authService.authenticate(client);
@@ -60,7 +61,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/consultant")
+    @PostMapping("/login/consultant")
     public ResponseEntity<String> login(@RequestBody Consultant consultant){
         try{
             String token = authService.authenticate(consultant);
@@ -84,6 +85,7 @@ public class AuthController {
         }catch (UserAlreadyExistsException e){
             return new ResponseEntity<>("User with this email already exists.", HttpStatus.BAD_REQUEST);
         } catch (SQLException e) {
+            e.printStackTrace();
             return new ResponseEntity<>("Problems with database.", HttpStatus.BAD_GATEWAY);
         }catch (Exception e){
             return new ResponseEntity<>("Unexpected error", HttpStatus.BAD_REQUEST);

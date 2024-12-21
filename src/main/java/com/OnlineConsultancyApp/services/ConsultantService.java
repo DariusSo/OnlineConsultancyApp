@@ -8,12 +8,14 @@ import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.models.User;
 import com.OnlineConsultancyApp.repositories.ConsultantRepository;
+import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.security.JwtGenerator;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Service
 public class ConsultantService {
@@ -41,5 +43,19 @@ public class ConsultantService {
         } else {
             throw new BadEmailOrPasswordException();
         }
+    }
+
+    public List<Consultant> getNewestConsultants() throws SQLException {
+        return consultantRepository.getNewestConsultants();
+    }
+
+    public Consultant getConsultantById(String token) throws SQLException {
+        long id = JwtDecoder.decodedUserId(token);
+        return consultantRepository.getConsultantById(id);
+    }
+    public void updateAvailableTime(String availableTime, String token) throws SQLException {
+        long userId = JwtDecoder.decodedUserId(token);
+        consultantRepository.updateDates(availableTime, userId);
+
     }
 }
