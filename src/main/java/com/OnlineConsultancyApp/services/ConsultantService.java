@@ -10,12 +10,15 @@ import com.OnlineConsultancyApp.models.User;
 import com.OnlineConsultancyApp.repositories.ConsultantRepository;
 import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.security.JwtGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ConsultantService {
@@ -53,9 +56,10 @@ public class ConsultantService {
         long id = JwtDecoder.decodedUserId(token);
         return consultantRepository.getConsultantById(id);
     }
-    public void updateAvailableTime(String availableTime, String token) throws SQLException {
+    public void updateAvailableTime(List<Map<String, String>> availableTime, String token) throws SQLException, JsonProcessingException {
         long userId = JwtDecoder.decodedUserId(token);
-        consultantRepository.updateDates(availableTime, userId);
+        String dates = new ObjectMapper().writeValueAsString(availableTime);
+        consultantRepository.updateDates(dates, userId);
 
     }
 }
