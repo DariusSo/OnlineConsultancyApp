@@ -56,6 +56,11 @@ public class ConsultantService {
         long id = JwtDecoder.decodedUserId(token);
         return consultantRepository.getConsultantById(id);
     }
+
+    public Consultant getConsultantById(long id) throws SQLException {
+        return consultantRepository.getConsultantById(id);
+    }
+
     public void updateAvailableTime(List<Map<String, String>> availableTime, String token) throws SQLException, JsonProcessingException {
         long userId = JwtDecoder.decodedUserId(token);
         String dates = new ObjectMapper().writeValueAsString(availableTime);

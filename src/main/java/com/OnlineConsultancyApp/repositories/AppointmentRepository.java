@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Repository
 public class AppointmentRepository {
@@ -83,10 +84,10 @@ public class AppointmentRepository {
         }
     }
 
-    public void updatePaidStatus(long id) throws SQLException {
-        PreparedStatement ps = Connect.SQLConnection("UPDATE appointments SET is_paid = ? WHERE id = ?");
+    public void updatePaidStatus(UUID uuid) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("UPDATE appointments SET is_paid = ? WHERE uuid = ?");
         ps.setBoolean(1, true);
-        ps.setLong(2, id);
+        ps.setString(2, String.valueOf(uuid));
         ps.execute();
     }
 

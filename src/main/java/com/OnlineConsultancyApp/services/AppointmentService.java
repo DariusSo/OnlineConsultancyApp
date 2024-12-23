@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 @Service
 public class AppointmentService {
@@ -45,6 +46,10 @@ public class AppointmentService {
         }else{
             throw new NoAccessException();
         }
+    }
+
+    public void updatePaymentStatus(UUID uuid) throws SQLException {
+        appointmentRepository.updatePaidStatus(uuid);
     }
 
 }
