@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class Appointment {
 
     private long id;
+    private String uuid;
     private String title;
     private String description;
     private Categories category;
@@ -24,7 +25,6 @@ public class Appointment {
     private LocalDateTime timeAndDate;
     private BigDecimal price;
     private boolean isAccepted;
-
-
+    private boolean isPaid;
 
 }

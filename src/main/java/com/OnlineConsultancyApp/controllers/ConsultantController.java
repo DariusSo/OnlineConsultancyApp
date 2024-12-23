@@ -4,6 +4,7 @@ import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.services.ConsultantService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,8 @@ public class ConsultantController {
             return new ResponseEntity<>(new Consultant(), HttpStatus.NOT_FOUND);
         } catch (SQLException e) {
             return new ResponseEntity<>(new Consultant(), HttpStatus.BAD_GATEWAY);
+        } catch (MalformedJwtException e){
+            return new ResponseEntity<>(new Consultant(), HttpStatus.UNAUTHORIZED);
         }
     }
     @PutMapping("/dates")

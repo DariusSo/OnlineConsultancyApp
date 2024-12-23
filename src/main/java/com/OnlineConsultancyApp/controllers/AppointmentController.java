@@ -6,6 +6,7 @@ import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.services.AppointmentService;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +28,12 @@ public class AppointmentController {
             appointmentService.addAppointment(appointment, jwtToken);
             return new ResponseEntity<>("Appointment created", HttpStatus.OK);
         }catch (SQLException e){
+            e.printStackTrace();
             return new ResponseEntity<>("Errors in database", HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
+        } catch (MalformedJwtException e){
+            return new ResponseEntity<>("You need to login", HttpStatus.UNAUTHORIZED);
+        }
+        catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>("Unknown error", HttpStatus.BAD_REQUEST);
         }

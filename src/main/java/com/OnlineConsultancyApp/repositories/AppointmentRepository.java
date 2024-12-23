@@ -19,8 +19,8 @@ public class AppointmentRepository {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         LocalDateTime localDateTime = LocalDateTime.parse(String.valueOf(appointment.getTimeAndDate()), formatter);
         PreparedStatement ps = Connect.SQLConnection("INSERT INTO appointments (title, description, category, " +
-                                                            "user_id, consultant_id, time_and_date, price, is_accepted) VALUES " +
-                                                            "(?,?,?,?,?,?,?,?)");
+                                                            "user_id, consultant_id, time_and_date, price, is_accepted, uuid, is_paid) VALUES " +
+                                                            "(?,?,?,?,?,?,?,?,?,?)");
         ps.setString(1, appointment.getTitle());
         ps.setString(2, appointment.getDescription());
         ps.setString(3, String.valueOf(appointment.getCategory()));
@@ -29,6 +29,8 @@ public class AppointmentRepository {
         ps.setString(6, String.valueOf(appointment.getTimeAndDate()));
         ps.setBigDecimal(7, appointment.getPrice());
         ps.setBoolean(8, false);
+        ps.setString(9, appointment.getUuid());
+        ps.setBoolean(10, false);
         ps.execute();
     }
 
@@ -39,9 +41,9 @@ public class AppointmentRepository {
 
         ResultSet rs = ps.executeQuery();
         if(rs.next()){
-            Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("title"), rs.getString("description"),
+            Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
-                            LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"));
+                            LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
             return appointment;
         }else{
             throw new NoSuchAppointmentException();
@@ -56,9 +58,9 @@ public class AppointmentRepository {
 
         ResultSet rs = ps.executeQuery();
         if(rs.next()){
-            Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("title"), rs.getString("description"),
+            Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
-                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"));
+                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
             return appointment;
         }else{
             throw new NoSuchAppointmentException();
@@ -72,13 +74,20 @@ public class AppointmentRepository {
 
         ResultSet rs = ps.executeQuery();
         if(rs.next()){
-            Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("title"), rs.getString("description"),
+            Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
-                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"));
+                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
             return appointment;
         }else{
             throw new NoSuchAppointmentException();
         }
+    }
+
+    public void updatePaidStatus(long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("UPDATE appointments SET is_paid = ? WHERE id = ?");
+        ps.setBoolean(1, true);
+        ps.setLong(2, id);
+        ps.execute();
     }
 
     public void confirmAppointment(long id) throws SQLException {
