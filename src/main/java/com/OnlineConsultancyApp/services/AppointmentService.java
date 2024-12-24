@@ -4,6 +4,9 @@ import com.OnlineConsultancyApp.Exceptions.NoAccessException;
 import com.OnlineConsultancyApp.Exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Appointment;
+import com.OnlineConsultancyApp.models.Client;
+import com.OnlineConsultancyApp.models.Consultant;
+import com.OnlineConsultancyApp.models.EmailMessage;
 import com.OnlineConsultancyApp.repositories.AppointmentRepository;
 import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,14 +27,29 @@ public class AppointmentService {
     ConsultantService consultantService;
     @Autowired
     ClientService clientService;
+    @Autowired
+    RabbitMQService rabbitMQService;
 
 
-    public void addAppointment(Appointment appointment, String token) throws SQLException, JsonProcessingException {
+    public void addAppointment(Appointment appointment, String token) throws Exception {
+        //Add appointment
         long userId = JwtDecoder.decodedUserId(token);
         appointment.setUserId(userId);
         appointmentRepository.addAppointment(appointment);
+        //Add appointment id to client
         long appointmentId = appointmentRepository.getAppointmentId(userId, appointment.getConsultantId());
         clientService.addAppointment(userId, appointmentId);
+
+        Client client = clientService.getClientById(userId);
+        Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
+        //Create email
+        String clientMessage = "Appointment with " + consultant.getFirstName() + " " + consultant.getLastName() + "created. Waiting for approval.";
+        String consultantMessage = client.getFirstName() + " " + client.getLastName() + "created an appointment with you, please confirm.";
+        EmailMessage clientEmail = new EmailMessage(client.getEmail(), clientMessage);
+        EmailMessage consultantEmail = new EmailMessage(consultant.getEmail(), consultantMessage);
+        //Send
+        rabbitMQService.sendConfirmationEmail(clientEmail);
+        rabbitMQService.sendConfirmationEmail(consultantEmail);
 
     }
 

@@ -46,7 +46,7 @@ public class StripeService {
         return PaymentIntent.create(params);
     }
 
-    public Session createCheckoutSession(Appointment appointment, String token) throws StripeException, SQLException, JsonProcessingException {
+    public Session createCheckoutSession(Appointment appointment, String token) throws Exception {
 
         Stripe.apiKey = System.getenv("STRIPE_API");
 

@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
@@ -98,6 +99,9 @@ public class ClientRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         Client client = getClientById(id);
         List<Long> appointmentList = client.getAppointmentsId();
+        if(appointmentList == null){
+            appointmentList = new ArrayList<>();
+        }
         appointmentList.add(appointmentId);
 
         String appointmentsIdString = objectMapper.writeValueAsString(appointmentList);
