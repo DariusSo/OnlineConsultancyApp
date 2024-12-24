@@ -7,6 +7,9 @@ import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
@@ -15,11 +18,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 
 @Repository
 public class ClientRepository {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void registerClient(Client client) throws SQLException {
 
@@ -36,15 +42,17 @@ public class ClientRepository {
 
     }
 
-    public User getClientById(long id) throws SQLException {
+    public Client getClientById(long id) throws SQLException, JsonProcessingException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM clients WHERE id = ?");
 
         ps.setLong(1, id);
         ResultSet rs = ps.executeQuery();
 
         if(rs.next()){
-            User client = new Client(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
-                    rs.getString("email"), rs.getString("phone"), rs.getString("appointments_ids"), Roles.valueOf(rs.getString("role")),
+            List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {
+            });
+            Client client = new Client(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
+                    rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     LocalDate.parse(rs.getString("birth_date")));
             return client;
         }else{
@@ -52,15 +60,15 @@ public class ClientRepository {
         }
     }
 
-    public User getClientByEmail(String email) throws SQLException {
+    public User getClientByEmail(String email) throws SQLException, JsonProcessingException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM clients WHERE email = ?");
-
         ps.setString(1, email);
         ResultSet rs = ps.executeQuery();
 
         if(rs.next()){
+            List<Long> appointmentList = objectMapper.readValue(rs.getString("appointments_ids"), List.class);
             User client = new Client(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
-                    rs.getString("email"), rs.getString("phone"), rs.getString("appointments_ids"), Roles.valueOf(rs.getString("role")),
+                    rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     LocalDate.parse(rs.getString("birth_date")));
             return client;
         }else{
@@ -83,5 +91,19 @@ public class ClientRepository {
         }else{
             throw new BadEmailOrPasswordException();
         }
+    }
+
+    public void addAppointment(long id, long appointmentId) throws SQLException, JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Client client = getClientById(id);
+        List<Long> appointmentList = client.getAppointmentsId();
+        appointmentList.add(appointmentId);
+
+        String appointmentsIdString = objectMapper.writeValueAsString(appointmentList);
+
+        PreparedStatement ps = Connect.SQLConnection("UPDATE clients SET appointments_ids = ? WHERE id = ?");
+        ps.setString(1, appointmentsIdString);
+        ps.setLong(2, id);
     }
 }

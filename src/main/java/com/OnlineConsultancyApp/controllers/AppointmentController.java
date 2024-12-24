@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/appointments")
@@ -39,14 +41,14 @@ public class AppointmentController {
         }
     }
     @GetMapping
-    public ResponseEntity<Appointment> getAppointments(@RequestHeader("Authorization") String jwtToken){
+    public ResponseEntity<List<Appointment>> getAppointments(@RequestHeader("Authorization") String jwtToken){
         try{
-            Appointment appointment = appointmentService.findAppointments(jwtToken);
-            return new ResponseEntity<>(appointment, HttpStatus.OK);
+            List<Appointment> appointmentList = appointmentService.findAppointments(jwtToken);
+            return new ResponseEntity<>(appointmentList, HttpStatus.OK);
         } catch (SQLException e) {
-            return new ResponseEntity<>(new Appointment(), HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_GATEWAY);
         } catch (ThereIsNoSuchRoleException e){
-            return new ResponseEntity<>(new Appointment(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
         }
     }
     @PutMapping

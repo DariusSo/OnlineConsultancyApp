@@ -8,6 +8,7 @@ import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.User;
 import com.OnlineConsultancyApp.repositories.ClientRepository;
 import com.OnlineConsultancyApp.security.JwtGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class ClientService {
     @Autowired
     ClientRepository clientRepository;
 
-    public void registerClient(Client client) throws SQLException {
+    public void registerClient(Client client) throws SQLException, JsonProcessingException {
         try{
             clientRepository.getClientByEmail(client.getEmail());
             throw new UserAlreadyExistsException();
@@ -40,6 +41,13 @@ public class ClientService {
         }else{
             throw new BadEmailOrPasswordException();
         }
+    }
 
+    public Client getClientById(long id) throws SQLException, JsonProcessingException {
+        return clientRepository.getClientById(id);
+    }
+
+    public void addAppointment(long id, long appointmentId) throws SQLException, JsonProcessingException {
+        clientRepository.addAppointment(id, appointmentId);
     }
 }

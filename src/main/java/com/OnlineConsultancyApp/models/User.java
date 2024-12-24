@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -18,10 +20,10 @@ public abstract class User {
     private String email;
     private String phone;
     private String password;
-    private String appointmentsId;
+    private List<Long> appointmentsId;
     private Roles role;
 
-    public User(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Roles role) {
+    public User(long id, String firstName, String lastName, String email, String phone, List<Long> appointmentsId, Roles role) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

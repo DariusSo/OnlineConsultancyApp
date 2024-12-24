@@ -2,6 +2,7 @@ package com.OnlineConsultancyApp.controllers;
 
 import com.OnlineConsultancyApp.Exceptions.BadEmailOrPasswordException;
 import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.Exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.Exceptions.UserAlreadyExistsException;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;
@@ -9,6 +10,7 @@ import com.OnlineConsultancyApp.models.User;
 import com.OnlineConsultancyApp.services.AuthService;
 import com.OnlineConsultancyApp.services.ClientService;
 import com.OnlineConsultancyApp.services.ConsultantService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,7 +43,9 @@ public class AuthController {
             return new ResponseEntity<>("User with this email already exists.", HttpStatus.BAD_REQUEST);
         } catch (SQLException e) {
             e.printStackTrace();
-            return new ResponseEntity<>("Problems with database.", HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>("Problems with database.", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<>("Converting appointments", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -90,6 +94,19 @@ public class AuthController {
         }catch (Exception e){
             return new ResponseEntity<>("Unexpected error", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<User> getProfileInfo(@RequestHeader("Authorization") String jwtToken) throws SQLException {
+        try{
+            User user = authService.getProfileInfo(jwtToken);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (ThereIsNoSuchRoleException e){
+            return new ResponseEntity<>(new Client(), HttpStatus.BAD_REQUEST);
+        } catch (SQLException | JsonProcessingException e){
+            return new ResponseEntity<>(new Client(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
 

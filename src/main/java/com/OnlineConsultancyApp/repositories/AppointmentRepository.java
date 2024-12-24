@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -33,9 +35,13 @@ public class AppointmentRepository {
         ps.setString(9, appointment.getUuid());
         ps.setBoolean(10, false);
         ps.execute();
+
+
     }
 
-    public Appointment getAppointmentsByUserId(long id) throws SQLException {
+    public List<Appointment> getAppointmentsByUserId(long id) throws SQLException {
+        List<Appointment> appointmentList = new ArrayList<>();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM appointments WHERE user_id = ?");
         ps.setLong(1, id);
@@ -45,27 +51,29 @@ public class AppointmentRepository {
             Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
                             LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
-            return appointment;
+            appointmentList.add(appointment);
         }else{
             throw new NoSuchAppointmentException();
         }
+        return appointmentList;
 
     }
 
-    public Appointment getAppointmentsByConsultantId(long id) throws SQLException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public List<Appointment> getAppointmentsByConsultantId(long id) throws SQLException {
+        List<Appointment> appointmentList = new ArrayList<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM appointments WHERE consultant_id = ?");
         ps.setLong(1, id);
 
         ResultSet rs = ps.executeQuery();
-        if(rs.next()){
+        while(rs.next()){
             Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
                     LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
-            return appointment;
-        }else{
-            throw new NoSuchAppointmentException();
+            appointmentList.add(appointment);
         }
+        return appointmentList;
     }
 
     public Appointment getAppointmentsByAppointmenttId(long id) throws SQLException {
@@ -79,6 +87,20 @@ public class AppointmentRepository {
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
                     LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
             return appointment;
+        }else{
+            throw new NoSuchAppointmentException();
+        }
+    }
+
+    public long getAppointmentId(long userId, long consultantId) throws SQLException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM appointments WHERE user_id = ? AND consultant_id = ?");
+        ps.setLong(1, userId);
+        ps.setLong(2, consultantId);
+
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()){
+            return rs.getLong("id");
         }else{
             throw new NoSuchAppointmentException();
         }

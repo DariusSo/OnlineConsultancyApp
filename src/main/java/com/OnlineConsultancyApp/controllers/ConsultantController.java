@@ -27,8 +27,8 @@ public class ConsultantController {
         try{
             List<Consultant> consultantList = consultantService.getNewestConsultants();
             return new ResponseEntity<>(consultantList, HttpStatus.OK);
-        } catch (SQLException e){
-            return new ResponseEntity<>(new ArrayList<Consultant>(), HttpStatus.BAD_GATEWAY);
+        } catch (SQLException | JsonProcessingException e){
+            return new ResponseEntity<>(new ArrayList<Consultant>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping
@@ -38,7 +38,7 @@ public class ConsultantController {
             return new ResponseEntity<>(consultant, HttpStatus.OK);
         } catch (NoSuchUserException e) {
             return new ResponseEntity<>(new Consultant(), HttpStatus.NOT_FOUND);
-        } catch (SQLException e) {
+        } catch (SQLException | JsonProcessingException e) {
             return new ResponseEntity<>(new Consultant(), HttpStatus.BAD_GATEWAY);
         } catch (MalformedJwtException e){
             return new ResponseEntity<>(new Consultant(), HttpStatus.UNAUTHORIZED);

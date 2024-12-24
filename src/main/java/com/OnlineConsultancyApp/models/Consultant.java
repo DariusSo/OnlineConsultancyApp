@@ -24,7 +24,7 @@ public class Consultant extends User{
     private String description;
     private BigDecimal hourlyRate;
 
-    public Consultant(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Roles role, String categories, String availableTime, String speciality, String description, BigDecimal hourlyRate) {
+    public Consultant(long id, String firstName, String lastName, String email, String phone, List<Long> appointmentsId, Roles role, String categories, String availableTime, String speciality, String description, BigDecimal hourlyRate) {
         super(id, firstName, lastName, email, phone, appointmentsId, role);
         this.categories = categories;
         this.availableTime = availableTime;

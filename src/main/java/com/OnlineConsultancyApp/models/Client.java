@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class Client extends User{
 
     private LocalDate birthDate;
 
-    public Client(long id, String firstName, String lastName, String email, String phone, String appointmentsId, Roles role, LocalDate birthDate) {
+    public Client(long id, String firstName, String lastName, String email, String phone, List<Long> appointmentsId, Roles role, LocalDate birthDate) {
         super(id, firstName, lastName, email, phone, appointmentsId, role);
         this.birthDate = birthDate;
     }

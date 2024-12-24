@@ -26,7 +26,7 @@ public class ConsultantService {
     @Autowired
     ConsultantRepository consultantRepository;
 
-    public void registerConsultant(Consultant consultant) throws SQLException {
+    public void registerConsultant(Consultant consultant) throws SQLException, JsonProcessingException {
         try{
             consultantRepository.getConsultantByEmail(consultant.getEmail());
             throw new UserAlreadyExistsException();
@@ -48,16 +48,16 @@ public class ConsultantService {
         }
     }
 
-    public List<Consultant> getNewestConsultants() throws SQLException {
+    public List<Consultant> getNewestConsultants() throws SQLException, JsonProcessingException {
         return consultantRepository.getNewestConsultants();
     }
 
-    public Consultant getConsultantById(String token) throws SQLException {
+    public Consultant getConsultantById(String token) throws SQLException, JsonProcessingException {
         long id = JwtDecoder.decodedUserId(token);
         return consultantRepository.getConsultantById(id);
     }
 
-    public Consultant getConsultantById(long id) throws SQLException {
+    public Consultant getConsultantById(long id) throws SQLException, JsonProcessingException {
         return consultantRepository.getConsultantById(id);
     }
 
