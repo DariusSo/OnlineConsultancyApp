@@ -19,8 +19,6 @@ import java.util.UUID;
 public class AppointmentRepository {
 
     public void addAppointment(Appointment appointment) throws SQLException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(String.valueOf(appointment.getTimeAndDate()), formatter);
         PreparedStatement ps = Connect.SQLConnection("INSERT INTO appointments (title, description, category, " +
                                                             "user_id, consultant_id, time_and_date, price, is_accepted, uuid, is_paid) VALUES " +
                                                             "(?,?,?,?,?,?,?,?,?,?)");
