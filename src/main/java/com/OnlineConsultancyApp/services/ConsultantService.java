@@ -24,7 +24,7 @@ import java.util.Map;
 public class ConsultantService {
 
     @Autowired
-    ConsultantRepository consultantRepository;
+    ConsultantRepository consultantRepository = new ConsultantRepository();
 
     public void registerConsultant(Consultant consultant) throws SQLException, JsonProcessingException {
         try{
