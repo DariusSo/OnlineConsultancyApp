@@ -1,6 +1,7 @@
 package com.OnlineConsultancyApp.services;
 
 import com.OnlineConsultancyApp.Exceptions.NoAccessException;
+import com.OnlineConsultancyApp.Exceptions.NoSuchAppointmentException;
 import com.OnlineConsultancyApp.Exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Appointment;
@@ -20,10 +21,7 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AppointmentService {
@@ -52,6 +50,7 @@ public class AppointmentService {
         //Remove available time from consultant
         String updatedDateAndTimeList = removeDateFromList(consultant.getAvailableTime(), appointment.getTimeAndDate());
         consultantService.updateAvailableTime(updatedDateAndTimeList, consultant.getId());
+        deleteAppointmentAfter5min(appointmentId, consultant.getAvailableTime(), appointment.getTimeAndDate(), consultant.getId());
         //Create email
         String clientMessage = "Appointment with " + consultant.getFirstName() + " " + consultant.getLastName() + " created. Waiting for approval.";
         String consultantMessage = client.getFirstName() + " " + client.getLastName() + " created an appointment with you, please confirm.";
@@ -60,6 +59,31 @@ public class AppointmentService {
         //Send
         rabbitMQService.sendConfirmationEmail(clientEmail);
         rabbitMQService.sendConfirmationEmail(consultantEmail);
+
+    }
+
+    public void deleteAppointmentAfter5min(long id, String availableTimeString, LocalDateTime appointmentDateAndTime, long consultantId){
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(30 * 1000);
+                    Appointment appointment = appointmentRepository.getAppointmentsByAppointmenttId(id);
+                    if(!appointment.isPaid()){
+                        deleteAppointment(id, availableTimeString, appointmentDateAndTime, consultantId);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    throw new NoSuchAppointmentException();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        thread.start();
 
     }
 
@@ -89,38 +113,50 @@ public class AppointmentService {
         appointmentRepository.updatePaidStatus(uuid);
     }
     public String removeDateFromList(String availableTimeString, LocalDateTime appointmentDateAndTime) throws JsonProcessingException {
+
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // Register the JavaTimeModule to handle LocalDateTime serialization/deserialization
-        objectMapper.registerModule(new JavaTimeModule());
-
-        // Ensure WRITE_DATES_AS_TIMESTAMPS is disabled to work with date strings
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        // Deserialize the JSON string into a list of maps
         List<Map<String, String>> availableTimeList = objectMapper.readValue(
                 availableTimeString,
                 new TypeReference<List<Map<String, String>>>() {}
         );
 
-        // Create a new list for the filtered result
         List<Map<String, String>> newList = new ArrayList<>();
 
-        // Iterate through the list of maps and filter out the specified date
         for (Map<String, String> availableTime : availableTimeList) {
             String dateStr = availableTime.get("date");
             if (dateStr != null) {
-                // Parse the date string into a LocalDateTime object
 
-                // If the date doesn't match, add it to the new list
-                if (!dateStr.equals(String.valueOf(appointmentDateAndTime))) {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                LocalDateTime freeTime = LocalDateTime.parse(dateStr, dateTimeFormatter);
+
+                if (!freeTime.equals(appointmentDateAndTime)) {
                     newList.add(availableTime);
+
                 }
             }
         }
-
-        // Serialize the filtered list back to JSON
         return objectMapper.writeValueAsString(newList);
+    }
+    public void deleteAppointment(long id, String availableTimeString, LocalDateTime appointmentDateAndTime, long consultantId) throws SQLException, JsonProcessingException {
+        appointmentRepository.deleteAppointment(id);
+        String dateString = addDateTolist(availableTimeString, appointmentDateAndTime);
+        consultantService.updateAvailableTime(dateString, consultantId);
+    }
+
+    public String addDateTolist(String availableTimeString, LocalDateTime appointmentDateAndTime) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<Map<String, String>> availableTimeList = objectMapper.readValue(
+                availableTimeString,
+                new TypeReference<List<Map<String, String>>>() {}
+        );
+
+        Map<String, String> dateToAdd = new HashMap<>();
+        dateToAdd.put("date", String.valueOf(appointmentDateAndTime));
+
+
+        return objectMapper.writeValueAsString(availableTimeList);
     }
 
 

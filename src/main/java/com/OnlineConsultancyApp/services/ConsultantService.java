@@ -68,8 +68,8 @@ public class ConsultantService {
 
     }
     public void updateAvailableTime(String availableTime, long userId) throws SQLException, JsonProcessingException {
-        String dates = new ObjectMapper().writeValueAsString(availableTime);
-        consultantRepository.updateDates(dates, userId);
+
+        consultantRepository.updateDates(availableTime, userId);
 
     }
 

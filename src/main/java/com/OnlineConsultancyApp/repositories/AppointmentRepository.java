@@ -118,7 +118,7 @@ public class AppointmentRepository {
         ps.execute();
     }
     public void deleteAppointment(long id) throws SQLException {
-        PreparedStatement ps = Connect.SQLConnection("DELETE * FROM clients WHERE id = ?");
+        PreparedStatement ps = Connect.SQLConnection("DELETE FROM appointments WHERE id = ?");
         ps.setLong(1, id);
         ps.execute();
     }

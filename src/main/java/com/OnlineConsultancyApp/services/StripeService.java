@@ -58,12 +58,11 @@ public class StripeService {
         Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
         BigDecimal amount = consultant.getHourlyRate();
         appointment.setPrice(amount);
-        StringBuilder paymentTitle = new StringBuilder()
-                .append("Appointment with ")
-                .append(consultant.getFirstName())
-                .append(" ")
-                .append(consultant.getLastName());
-
+        String paymentTitle = "Appointment with " +
+                consultant.getFirstName() +
+                " " +
+                consultant.getLastName();
+        long expiresAt = (System.currentTimeMillis() / 1000) + 1800;
         appointmentService.addAppointment(appointment, token);
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -75,10 +74,11 @@ public class StripeService {
                                 .setCurrency("eur")
                                 .setUnitAmount((long) Double.parseDouble(String.valueOf(appointment.getPrice())) * 100)
                                 .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                        .setName("Shopping cart")
+                                        .setName(paymentTitle)
                                         .build())
                                 .build())
                         .build())
+                .putExtraParam("expires_at", expiresAt)
                 .build();
         Session session = Session.create(params);
         //rs.addSessionId(session.getId(), userId, eventId);

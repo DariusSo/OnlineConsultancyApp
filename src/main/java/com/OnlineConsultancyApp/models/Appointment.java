@@ -1,6 +1,7 @@
 package com.OnlineConsultancyApp.models;
 
 import com.OnlineConsultancyApp.enums.Categories;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
