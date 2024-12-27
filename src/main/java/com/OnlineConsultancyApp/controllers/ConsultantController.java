@@ -1,6 +1,7 @@
 package com.OnlineConsultancyApp.controllers;
 
 import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.services.ConsultantService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,15 @@ public class ConsultantController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return  new ResponseEntity<>("Json parse problems.", HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<Consultant>> searchConsultants(double minPrice, double maxPrice, String speciality, Categories category, LocalDate date){
+        try {
+            List<Consultant> consultantList = consultantService.getConsultantsWithFilters(minPrice, maxPrice, speciality, category, date);
+            return new ResponseEntity<>(consultantList, HttpStatus.OK);
+        } catch (SQLException | JsonProcessingException e) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

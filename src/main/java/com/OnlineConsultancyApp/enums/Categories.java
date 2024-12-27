@@ -11,7 +11,8 @@ public enum Categories {
     HEALTH,
     MARKETING,
     BUSINESS,
-    OTHER;
+    OTHER,
+    ALL;
 
 
     @JsonCreator

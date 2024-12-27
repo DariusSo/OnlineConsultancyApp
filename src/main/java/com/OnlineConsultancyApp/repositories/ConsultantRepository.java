@@ -3,6 +3,7 @@ package com.OnlineConsultancyApp.repositories;
 import com.OnlineConsultancyApp.Exceptions.BadEmailOrPasswordException;
 import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.config.Connect;
+import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;
@@ -16,8 +17,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class ConsultantRepository {
@@ -120,6 +124,51 @@ public class ConsultantRepository {
         ps.setString(1, availableTime);
         ps.setLong(2, id);
         ps.execute();
+    }
+
+    public List<Consultant> getConsultantsWithHourlyRateFilter(double minPrice, double maxPrice, String speciality) throws SQLException {
+        List<Consultant> consultantList = new ArrayList<>();
+
+        PreparedStatement pr = Connect.SQLConnection("SELECT * FROM events WHERE hourly_rate > ? AND hourly_rate < ? AND speciality LIKE ?");
+
+        pr.setDouble(1, minPrice);
+        pr.setDouble(2, maxPrice);
+        pr.setString(3, "%" + speciality + "%");
+
+        ResultSet rs = pr.executeQuery();
+
+        while(rs.next()){
+            List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
+            Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
+                    rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
+                    rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+            consultantList.add(consultant);
+        }
+        return consultantList;
+    }
+
+    public List<Consultant> getConsultantsWithHourlyRateAndCategoryFilter(double minPrice, double maxPrice, String speciality, Categories category) throws SQLException {
+        List<Consultant> consultantList = new ArrayList<>();
+
+        PreparedStatement pr = Connect.SQLConnection("SELECT * FROM events WHERE hourly_rate > ? AND hourly_rate < ? AND speciality LIKE ? AND categories = ?");
+
+        pr.setDouble(1, minPrice);
+        pr.setDouble(2, maxPrice);
+        pr.setString(3, "%" + speciality + "%");
+        pr.setString(4, String.valueOf(category));
+
+        ResultSet rs = pr.executeQuery();
+
+        while(rs.next()){
+            List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
+            Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
+                    rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
+                    rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+            consultantList.add(consultant);
+        }
+        return consultantList;
     }
 
 }
