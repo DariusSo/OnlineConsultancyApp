@@ -71,7 +71,7 @@ public class ProccessTimeRunnable implements Runnable{
 
             }
         }
-        //countDownLatch.countDown();
+        countDownLatch.countDown();
 
     }
 }

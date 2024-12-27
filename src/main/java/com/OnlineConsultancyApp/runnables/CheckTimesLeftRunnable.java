@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
@@ -23,33 +24,39 @@ public class CheckTimesLeftRunnable implements Runnable {
 
     @Override
     public void run() {
-        try {
-            getConsultantList();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        Thread thread1 = new Thread(new ProccessTimeRunnable());
-        Thread thread2 = new Thread(new ProccessTimeRunnable());
-        Thread thread3 = new Thread(new ProccessTimeRunnable());
-        Thread thread4 = new Thread(new ProccessTimeRunnable());
-
-        thread1.start();
-        thread2.start();
-        thread3.start();
-        thread4.start();
-
-
-
-        System.out.println("List completed.");
-        System.out.println(processedConsultantsIds.size());
-        while(true) {
+        while(true){
             try {
-                Thread.sleep(1000);
-                consultantList = new ArrayList<>();
-                processedConsultantsIds = new ArrayList<>();
+                getConsultantList();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            CountDownLatch countDownLatch = new CountDownLatch(4);
+
+            Thread thread1 = new Thread(new ProccessTimeRunnable(countDownLatch));
+            Thread thread2 = new Thread(new ProccessTimeRunnable(countDownLatch));
+            Thread thread3 = new Thread(new ProccessTimeRunnable(countDownLatch));
+            Thread thread4 = new Thread(new ProccessTimeRunnable(countDownLatch));
+
+            thread1.start();
+            thread2.start();
+            thread3.start();
+            thread4.start();
+
+            try {
+                countDownLatch.await();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+            System.out.println("List completed.");
+            System.out.println(processedConsultantsIds.size());
+            try {
+                Thread.sleep(3600 * 1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            processedConsultantsIds = new ArrayList<>();
+            consultantList = new ArrayList<>();
         }
     }
 
