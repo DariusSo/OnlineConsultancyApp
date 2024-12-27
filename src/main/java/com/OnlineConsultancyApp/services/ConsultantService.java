@@ -91,7 +91,7 @@ public class ConsultantService {
         return consultantList;
     }
 
-    public List<Consultant> getConsultantsByDate(List<Consultant> consultantList, LocalDateTime date) throws JsonProcessingException {
+    public List<Consultant> getConsultantsByDate(List<Consultant> consultantList, LocalDate date) throws JsonProcessingException {
         List<Consultant> newConsultantList = new ArrayList<>();
         for(Consultant c : consultantList){
 
