@@ -1,11 +1,10 @@
 package com.OnlineConsultancyApp.services;
 
-import com.OnlineConsultancyApp.Exceptions.BadEmailOrPasswordException;
-import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
-import com.OnlineConsultancyApp.Exceptions.UserAlreadyExistsException;
+import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
+import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.exceptions.UserAlreadyExistsException;
 import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
-import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.models.User;
 import com.OnlineConsultancyApp.repositories.ConsultantRepository;
@@ -18,9 +17,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,10 @@ public class ConsultantService {
     @Autowired
     ConsultantRepository consultantRepository = new ConsultantRepository();
 
-    public void registerConsultant(Consultant consultant) throws SQLException, JsonProcessingException {
+    @Autowired
+    RedisService redisService;
+
+    public void registerConsultant(Consultant consultant) throws SQLException, IOException, ClassNotFoundException {
         try{
             consultantRepository.getConsultantByEmail(consultant.getEmail());
             throw new UserAlreadyExistsException();
@@ -41,7 +43,10 @@ public class ConsultantService {
             String hashedPassword = BCrypt.hashpw(consultant.getPassword(), BCrypt.gensalt());
             consultant.setPassword(hashedPassword);
             consultant.setRole(Roles.CONSULTANT);
-            consultantRepository.registerConsultant(consultant);
+            consultant.setAvailableTime("[]");
+            long id = consultantRepository.registerConsultant(consultant);
+            consultant.setId(id);
+            redisService.put(consultant);
         }
     }
 

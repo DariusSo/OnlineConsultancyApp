@@ -1,4 +1,4 @@
-package com.OnlineConsultancyApp.Exceptions;
+package com.OnlineConsultancyApp.exceptions;
 
 public class NoAccessException extends RuntimeException{
     public NoAccessException() {

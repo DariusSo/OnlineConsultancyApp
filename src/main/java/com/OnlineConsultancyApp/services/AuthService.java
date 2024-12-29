@@ -1,6 +1,6 @@
 package com.OnlineConsultancyApp.services;
 
-import com.OnlineConsultancyApp.Exceptions.ThereIsNoSuchRoleException;
+import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;

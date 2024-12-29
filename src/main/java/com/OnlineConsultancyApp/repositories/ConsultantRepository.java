@@ -1,7 +1,7 @@
 package com.OnlineConsultancyApp.repositories;
 
-import com.OnlineConsultancyApp.Exceptions.BadEmailOrPasswordException;
-import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
+import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.config.Connect;
 import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
@@ -16,19 +16,15 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class ConsultantRepository {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void registerConsultant(Consultant consultant) throws SQLException {
+    public long registerConsultant(Consultant consultant) throws SQLException, JsonProcessingException {
 
         PreparedStatement ps = Connect.SQLConnection("INSERT INTO consultants (first_name, last_name, email, password, role, " +
                 "categories, available_time, speciality, description, hourly_rate, phone)" +
@@ -45,6 +41,8 @@ public class ConsultantRepository {
         ps.setBigDecimal(10, consultant.getHourlyRate());
         ps.setString(11, consultant.getPhone());
         ps.execute();
+
+        return getConsultantByEmail(consultant.getEmail()).getId();
 
     }
 

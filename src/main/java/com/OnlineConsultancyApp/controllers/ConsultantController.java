@@ -1,9 +1,10 @@
 package com.OnlineConsultancyApp.controllers;
 
-import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.services.ConsultantService;
+import com.OnlineConsultancyApp.services.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,13 +27,18 @@ public class ConsultantController {
     @Autowired
     ConsultantService consultantService;
 
+    @Autowired
+    RedisService redisService;
+
     @GetMapping("/newest")
     public ResponseEntity<List<Consultant>> getNewestConsultants(){
         try{
-            List<Consultant> consultantList = consultantService.getNewestConsultants();
+            List<Consultant> consultantList = redisService.getNewConsultants();
             return new ResponseEntity<>(consultantList, HttpStatus.OK);
-        } catch (SQLException | JsonProcessingException e){
+        } catch (JsonProcessingException e){
             return new ResponseEntity<>(new ArrayList<Consultant>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
     @GetMapping

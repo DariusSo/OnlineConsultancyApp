@@ -1,9 +1,9 @@
 package com.OnlineConsultancyApp.controllers;
 
-import com.OnlineConsultancyApp.Exceptions.BadEmailOrPasswordException;
-import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
-import com.OnlineConsultancyApp.Exceptions.ThereIsNoSuchRoleException;
-import com.OnlineConsultancyApp.Exceptions.UserAlreadyExistsException;
+import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
+import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
+import com.OnlineConsultancyApp.exceptions.UserAlreadyExistsException;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.models.User;
@@ -15,12 +15,9 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.SQLNonTransientConnectionException;
 
 @RestController
 @RequestMapping("/auth")
@@ -92,6 +89,7 @@ public class AuthController {
             e.printStackTrace();
             return new ResponseEntity<>("Problems with database.", HttpStatus.BAD_GATEWAY);
         }catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>("Unexpected error", HttpStatus.BAD_REQUEST);
         }
     }

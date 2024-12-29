@@ -1,8 +1,8 @@
 package com.OnlineConsultancyApp.services;
 
-import com.OnlineConsultancyApp.Exceptions.NoAccessException;
-import com.OnlineConsultancyApp.Exceptions.NoSuchAppointmentException;
-import com.OnlineConsultancyApp.Exceptions.ThereIsNoSuchRoleException;
+import com.OnlineConsultancyApp.exceptions.NoAccessException;
+import com.OnlineConsultancyApp.exceptions.NoSuchAppointmentException;
+import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.models.Client;
@@ -13,8 +13,6 @@ import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

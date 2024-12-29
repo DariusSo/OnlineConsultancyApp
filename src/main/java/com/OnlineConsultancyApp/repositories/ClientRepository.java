@@ -1,9 +1,8 @@
 package com.OnlineConsultancyApp.repositories;
 
-import com.OnlineConsultancyApp.Exceptions.BadEmailOrPasswordException;
-import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
+import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.config.Connect;
-import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.User;
@@ -12,16 +11,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 
 @Repository
 public class ClientRepository {

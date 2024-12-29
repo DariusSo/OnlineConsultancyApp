@@ -1,8 +1,8 @@
 package com.OnlineConsultancyApp.services;
 
-import com.OnlineConsultancyApp.Exceptions.BadEmailOrPasswordException;
-import com.OnlineConsultancyApp.Exceptions.NoSuchUserException;
-import com.OnlineConsultancyApp.Exceptions.UserAlreadyExistsException;
+import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
+import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
+import com.OnlineConsultancyApp.exceptions.UserAlreadyExistsException;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.User;

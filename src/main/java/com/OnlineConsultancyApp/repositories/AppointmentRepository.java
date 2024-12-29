@@ -1,6 +1,6 @@
 package com.OnlineConsultancyApp.repositories;
 
-import com.OnlineConsultancyApp.Exceptions.NoSuchAppointmentException;
+import com.OnlineConsultancyApp.exceptions.NoSuchAppointmentException;
 import com.OnlineConsultancyApp.config.Connect;
 import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.models.Appointment;

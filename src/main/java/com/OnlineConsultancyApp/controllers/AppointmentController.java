@@ -1,10 +1,8 @@
 package com.OnlineConsultancyApp.controllers;
 
-import com.OnlineConsultancyApp.Exceptions.NoAccessException;
-import com.OnlineConsultancyApp.Exceptions.ThereIsNoSuchRoleException;
-import com.OnlineConsultancyApp.enums.Roles;
+import com.OnlineConsultancyApp.exceptions.NoAccessException;
+import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.models.Appointment;
-import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.services.AppointmentService;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
