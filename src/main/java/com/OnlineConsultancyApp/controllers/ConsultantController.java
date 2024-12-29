@@ -7,6 +7,7 @@ import com.OnlineConsultancyApp.services.ConsultantService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,11 +61,12 @@ public class ConsultantController {
         }
     }
     @GetMapping("/search")
-    public ResponseEntity<List<Consultant>> searchConsultants(double minPrice, double maxPrice, String speciality, Categories category, LocalDate date){
+    public ResponseEntity<List<Consultant>> searchConsultants(double minPrice, double maxPrice, String speciality, Categories category, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
         try {
             List<Consultant> consultantList = consultantService.getConsultantsWithFilters(minPrice, maxPrice, speciality, category, date);
             return new ResponseEntity<>(consultantList, HttpStatus.OK);
         } catch (SQLException | JsonProcessingException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

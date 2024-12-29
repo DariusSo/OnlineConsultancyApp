@@ -102,10 +102,11 @@ public class ConsultantService {
             );
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             for(Map<String, String> m : availableTimeList){
-                LocalDate dateToCompare = LocalDate.parse(m.get("date"), formatter);
+                LocalDate dateToCompare = LocalDate.parse(m.get("date").split(" ")[0], formatter);
                 LocalDate selectedDate = LocalDate.parse(String.valueOf(date), formatter);
                 if(dateToCompare.equals(selectedDate)){
                     newConsultantList.add(c);
+                    break;
                 }
             }
         }
