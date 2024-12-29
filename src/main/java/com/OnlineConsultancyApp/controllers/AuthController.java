@@ -13,6 +13,7 @@ import com.OnlineConsultancyApp.services.ConsultantService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,6 +80,7 @@ public class AuthController {
     }
 
     @PostMapping("/consultant")
+    @CacheEvict(value = "consultant_search", allEntries = true)
     public ResponseEntity<String> registration(@RequestBody Consultant consultant){
         try{
             consultantService.registerConsultant(consultant);
