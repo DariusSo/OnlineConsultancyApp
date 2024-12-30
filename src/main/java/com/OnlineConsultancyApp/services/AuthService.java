@@ -1,7 +1,9 @@
 package com.OnlineConsultancyApp.services;
 
+import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.enums.Roles;
+import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.models.User;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -20,6 +23,8 @@ public class AuthService {
     ClientService clientService;
     @Autowired
     ConsultantService consultantService;
+    @Autowired
+    AppointmentService appointmentService;
 
 
     public String authenticate(User user) throws SQLException, BadRequestException {
@@ -39,6 +44,31 @@ public class AuthService {
         } else if (role == Roles.CONSULTANT) {
             return consultantService.getConsultantById(id);
         } else {
+            throw new ThereIsNoSuchRoleException();
+        }
+    }
+
+    public void authenticate(String token, UUID roomUuid) throws SQLException {
+        long userId = JwtDecoder.decodedUserId(token);
+        Roles role = JwtDecoder.decodedRole(token);
+        Appointment appointment = appointmentService.getByRoomUuid(roomUuid);
+        checkAuth(role, userId, appointment);
+    }
+
+    public void checkAuth(Roles role, long userId, Appointment appointment){
+        if(role == Roles.CLIENT){
+            if(appointment.getUserId() == userId){
+
+            }else{
+                throw new NoAccessException();
+            }
+        } else if (role == Roles.CONSULTANT) {
+            if(appointment.getConsultantId() == userId){
+
+            }else{
+                throw new NoAccessException();
+            }
+        }else{
             throw new ThereIsNoSuchRoleException();
         }
     }

@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,5 +28,6 @@ public class Appointment {
     private BigDecimal price;
     private boolean isAccepted;
     private boolean isPaid;
+    private UUID roomUuid;
 
 }

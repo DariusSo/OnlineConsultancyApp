@@ -1,9 +1,6 @@
 package com.OnlineConsultancyApp.controllers;
 
-import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
-import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
-import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
-import com.OnlineConsultancyApp.exceptions.UserAlreadyExistsException;
+import com.OnlineConsultancyApp.exceptions.*;
 import com.OnlineConsultancyApp.models.Client;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.models.User;
@@ -19,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -107,6 +105,22 @@ public class AuthController {
             return new ResponseEntity<>(new Client(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+    @GetMapping("/consultationRoom")
+    public ResponseEntity<String> authenticateConsultationRoom(@RequestHeader("Authorization") String jwtToken, UUID roomUuid){
+        try{
+            authService.authenticate(jwtToken, roomUuid);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        } catch (SQLException e) {
+            return new ResponseEntity<>("Database problems", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (NoAccessException e){
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        } catch (ThereIsNoSuchRoleException e){
+            return new ResponseEntity<>("Bad role", HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>("Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

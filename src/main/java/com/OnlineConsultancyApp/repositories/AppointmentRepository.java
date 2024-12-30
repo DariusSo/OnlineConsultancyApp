@@ -20,8 +20,8 @@ public class AppointmentRepository {
 
     public void addAppointment(Appointment appointment) throws SQLException {
         PreparedStatement ps = Connect.SQLConnection("INSERT INTO appointments (title, description, category, " +
-                                                            "user_id, consultant_id, time_and_date, price, is_accepted, uuid, is_paid) VALUES " +
-                                                            "(?,?,?,?,?,?,?,?,?,?)");
+                                                            "user_id, consultant_id, time_and_date, price, is_accepted, uuid, is_paid, room_uuid) VALUES " +
+                                                            "(?,?,?,?,?,?,?,?,?,?,?)");
         ps.setString(1, appointment.getTitle());
         ps.setString(2, appointment.getDescription());
         ps.setString(3, String.valueOf(appointment.getCategory()));
@@ -32,6 +32,7 @@ public class AppointmentRepository {
         ps.setBoolean(8, false);
         ps.setString(9, appointment.getUuid());
         ps.setBoolean(10, false);
+        ps.setString(11, String.valueOf(appointment.getRoomUuid()));
         ps.execute();
 
 
@@ -47,13 +48,33 @@ public class AppointmentRepository {
         ResultSet rs = ps.executeQuery();
         if(rs.next()){
             Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
-                    Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
-                            LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
+                            Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
+                            LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"),
+                            rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"), UUID.fromString(rs.getString("room_uuid")));
             appointmentList.add(appointment);
         }else{
             throw new NoSuchAppointmentException();
         }
         return appointmentList;
+
+    }
+
+    public Appointment getAppointmentsRoomUuid(UUID uuid) throws SQLException {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM appointments WHERE room_uuid = ?");
+        ps.setString(1, String.valueOf(uuid));
+
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()){
+            Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
+                    Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
+                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"),
+                    rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"), UUID.fromString(rs.getString("room_uuid")));
+            return appointment;
+        }else{
+            throw new NoSuchAppointmentException();
+        }
 
     }
 
@@ -68,7 +89,8 @@ public class AppointmentRepository {
         while(rs.next()){
             Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
-                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
+                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"),
+                    rs.getBoolean("is_paid"), UUID.fromString(rs.getString("room_uuid")));
             appointmentList.add(appointment);
         }
         return appointmentList;
@@ -83,7 +105,8 @@ public class AppointmentRepository {
         if(rs.next()){
             Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                     Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
-                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"));
+                    LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"), rs.getBoolean("is_accepted"),
+                    rs.getBoolean("is_paid"), UUID.fromString(rs.getString("room_uuid")));
             return appointment;
         }else{
             throw new NoSuchAppointmentException();

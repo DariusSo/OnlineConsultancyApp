@@ -35,9 +35,11 @@ public class AppointmentService {
 
 
     public void addAppointment(Appointment appointment, String token) throws Exception {
+        UUID roomUuid = UUID.randomUUID();
         //Add appointment
         long userId = JwtDecoder.decodedUserId(token);
         appointment.setUserId(userId);
+        appointment.setRoomUuid(roomUuid);
         appointmentRepository.addAppointment(appointment);
         //Add appointment id to client
         long appointmentId = appointmentRepository.getAppointmentId(userId, appointment.getConsultantId());
@@ -155,6 +157,9 @@ public class AppointmentService {
 
 
         return objectMapper.writeValueAsString(availableTimeList);
+    }
+    public Appointment getByRoomUuid(UUID uuid) throws SQLException {
+        return appointmentRepository.getAppointmentsRoomUuid(uuid);
     }
 
 
