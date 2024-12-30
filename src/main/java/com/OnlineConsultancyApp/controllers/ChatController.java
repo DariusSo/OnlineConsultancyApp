@@ -15,9 +15,16 @@ public class ChatController {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
-    @MessageMapping("/consultation/{sessionId}")
-    @SendTo("/topic/consultation/{sessionId}")
+    @MessageMapping("/consultation/{roomUuid}")
+    @SendTo("/topic/consultation/{roomUuid}")
     public ChatMessage echoChatMessage(ChatMessage chatMessage){
         return chatMessage;
+    }
+
+    @MessageMapping("/signal/{sessionId}")
+    @SendTo("/topic/signal/{sessionId}")
+    public String handleSignalMessage(String message) {
+        System.out.println("Received STOMP message: " + message);
+        return message;
     }
 }

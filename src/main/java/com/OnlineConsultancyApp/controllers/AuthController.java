@@ -8,6 +8,7 @@ import com.OnlineConsultancyApp.services.AuthService;
 import com.OnlineConsultancyApp.services.ClientService;
 import com.OnlineConsultancyApp.services.ConsultantService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.jsonwebtoken.MalformedJwtException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -117,6 +118,8 @@ public class AuthController {
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         } catch (ThereIsNoSuchRoleException e){
             return new ResponseEntity<>("Bad role", HttpStatus.BAD_REQUEST);
+        } catch (MalformedJwtException e){
+            return new ResponseEntity<>("Not logged in", HttpStatus.UNAUTHORIZED);
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>("Unknown error", HttpStatus.INTERNAL_SERVER_ERROR);

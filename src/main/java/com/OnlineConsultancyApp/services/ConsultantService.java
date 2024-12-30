@@ -28,7 +28,6 @@ import java.util.Map;
 @Service
 public class ConsultantService {
 
-    @Autowired
     ConsultantRepository consultantRepository = new ConsultantRepository();
 
     @Autowired
