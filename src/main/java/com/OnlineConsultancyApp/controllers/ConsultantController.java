@@ -42,6 +42,7 @@ public class ConsultantController {
             throw new RuntimeException(e);
         }
     }
+
     @GetMapping
     public ResponseEntity<Consultant> getConsultantById(@RequestHeader("Authorization") String jwtToken){
         try{
@@ -86,6 +87,18 @@ public class ConsultantController {
         } catch (SQLException | JsonProcessingException e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    @GetMapping("/dates")
+    public ResponseEntity<String> getDates(long id){
+        try{
+            String dates = consultantService.getDates(id);
+            return new ResponseEntity<>(dates, HttpStatus.OK);
+        } catch (SQLException e) {
+            return new ResponseEntity<>("Database problems", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (NoSuchUserException e){
+            return new ResponseEntity<>("Can't find consultant", HttpStatus.BAD_REQUEST);
         }
     }
 

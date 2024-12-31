@@ -24,7 +24,6 @@ public class ChatController {
     @MessageMapping("/signal/{sessionId}")
     @SendTo("/topic/signal/{sessionId}")
     public String handleSignalMessage(String message) {
-        System.out.println("Received STOMP message: " + message);
         return message;
     }
 }

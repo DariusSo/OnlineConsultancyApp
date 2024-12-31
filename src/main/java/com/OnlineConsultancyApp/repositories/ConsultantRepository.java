@@ -124,6 +124,16 @@ public class ConsultantRepository {
         ps.setLong(2, id);
         ps.execute();
     }
+    public String getDates(long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants WHERE id = ?");
+        ps.setLong(1, id);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()){
+            return rs.getString("available_dates");
+        }else{
+            throw new NoSuchUserException();
+        }
+    }
 
     public List<Consultant> getConsultantsWithHourlyRateFilter(double minPrice, double maxPrice, String speciality) throws SQLException {
         List<Consultant> consultantList = new ArrayList<>();

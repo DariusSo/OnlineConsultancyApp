@@ -116,5 +116,8 @@ public class ConsultantService {
         }
         return newConsultantList;
     }
+    public String getDates(long id) throws SQLException {
+        return consultantRepository.getDates(id);
+    }
 
 }
