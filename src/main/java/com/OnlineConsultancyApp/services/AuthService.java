@@ -72,4 +72,13 @@ public class AuthService {
             throw new ThereIsNoSuchRoleException();
         }
     }
+
+    public void authenticateRole(String token) throws NoAccessException{
+        Roles role = JwtDecoder.decodedRole(token);
+        if(role == Roles.CLIENT || role == Roles.CONSULTANT){
+
+        }else{
+            throw new NoAccessException();
+        }
+    }
 }

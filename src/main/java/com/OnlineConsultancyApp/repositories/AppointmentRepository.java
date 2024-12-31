@@ -46,14 +46,12 @@ public class AppointmentRepository {
         ps.setLong(1, id);
 
         ResultSet rs = ps.executeQuery();
-        if(rs.next()){
+        while(rs.next()){
             Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
                             Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
                             LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"),
                             rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"), UUID.fromString(rs.getString("room_uuid")));
             appointmentList.add(appointment);
-        }else{
-            throw new NoSuchAppointmentException();
         }
         return appointmentList;
 
@@ -144,6 +142,23 @@ public class AppointmentRepository {
         PreparedStatement ps = Connect.SQLConnection("DELETE FROM appointments WHERE id = ?");
         ps.setLong(1, id);
         ps.execute();
+    }
+
+    public void addStripeSessionId(String sessionId, UUID uuid) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("UPDATE appointments SET stripe_session_id = ? WHERE uuid = ?");
+        ps.setString(1, sessionId);
+        ps.setString(2, String.valueOf(uuid));
+        ps.execute();
+    }
+
+    public String getStripeSessionId(long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("SELECT stripe_session_id FROM appointments WHERE _id = ?");
+        ps.setLong(1, id);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()){
+            return rs.getString("stripe_session_id");
+        }
+        return "";
     }
 
 }

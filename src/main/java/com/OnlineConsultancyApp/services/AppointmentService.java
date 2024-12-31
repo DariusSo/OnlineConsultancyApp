@@ -13,6 +13,7 @@ import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,10 @@ public class AppointmentService {
     ClientService clientService;
     @Autowired
     RabbitMQService rabbitMQService;
+    @Autowired
+    AuthService authService;
+    @Autowired
+    StripeService stripeService;
 
 
     public void addAppointment(Appointment appointment, String token) throws Exception {
@@ -91,7 +96,8 @@ public class AppointmentService {
         Roles role = JwtDecoder.decodedRole(jwtToken);
         long userId = JwtDecoder.decodedUserId(jwtToken);
         if(role == Roles.CLIENT){
-            return appointmentRepository.getAppointmentsByUserId(userId);
+            List<Appointment> appointmentList = appointmentRepository.getAppointmentsByUserId(userId);
+            return appointmentList;
         } else if (role == Roles.CONSULTANT) {
             return appointmentRepository.getAppointmentsByConsultantId(userId);
         }else{
@@ -138,6 +144,12 @@ public class AppointmentService {
         }
         return objectMapper.writeValueAsString(newList);
     }
+
+    public void cancelAppointment(String token, long appointmentId) throws StripeException, SQLException {
+        authService.authenticateRole(token);
+        stripeService.createRefund(appointmentId);
+    }
+
     public void deleteAppointment(long id, String availableTimeString, LocalDateTime appointmentDateAndTime, long consultantId) throws SQLException, JsonProcessingException {
         appointmentRepository.deleteAppointment(id);
         String dateString = addDateTolist(availableTimeString, appointmentDateAndTime);
@@ -160,6 +172,15 @@ public class AppointmentService {
     }
     public Appointment getByRoomUuid(UUID uuid) throws SQLException {
         return appointmentRepository.getAppointmentsRoomUuid(uuid);
+    }
+    public void addStripeSessionId(String sessionId, UUID uuid) throws SQLException {
+        appointmentRepository.addStripeSessionId(sessionId, uuid);
+    }
+    public String getStripeSessionId(long appointmentId) throws SQLException {
+        return appointmentRepository.getStripeSessionId(appointmentId);
+    }
+    public Appointment getAppointmentById(long id) throws SQLException {
+        return appointmentRepository.getAppointmentsByAppointmenttId(id);
     }
 
 

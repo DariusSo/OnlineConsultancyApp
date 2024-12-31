@@ -129,7 +129,7 @@ public class ConsultantRepository {
         ps.setLong(1, id);
         ResultSet rs = ps.executeQuery();
         if(rs.next()){
-            return rs.getString("available_dates");
+            return rs.getString("available_time");
         }else{
             throw new NoSuchUserException();
         }

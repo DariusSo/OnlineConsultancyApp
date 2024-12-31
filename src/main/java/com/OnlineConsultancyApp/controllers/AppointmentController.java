@@ -4,6 +4,7 @@ import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.services.AppointmentService;
+import com.stripe.exception.StripeException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,7 @@ public class AppointmentController {
             List<Appointment> appointmentList = appointmentService.findAppointments(jwtToken);
             return new ResponseEntity<>(appointmentList, HttpStatus.OK);
         } catch (SQLException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_GATEWAY);
         } catch (ThereIsNoSuchRoleException e){
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
@@ -59,6 +61,17 @@ public class AppointmentController {
             return new ResponseEntity<>("Database problems", HttpStatus.BAD_GATEWAY);
         } catch (NoAccessException e){
             return new ResponseEntity<>("No access", HttpStatus.UNAUTHORIZED);
+        }
+    }
+    @GetMapping("/cancel")
+    public ResponseEntity<String> cancelAppointment(@RequestHeader("Authorization") String token, long appointmentId){
+        try{
+            appointmentService.cancelAppointment(token, appointmentId);
+            return new ResponseEntity<>("Success, appointment canceled.", HttpStatus.OK);
+        } catch (StripeException | SQLException e) {
+            return new ResponseEntity<>("Stripe or SQL", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (NoAccessException e){
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
     }
 

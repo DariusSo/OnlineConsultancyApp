@@ -1,15 +1,21 @@
 package com.OnlineConsultancyApp.services;
 
+import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.models.Consultant;
+import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.RefundCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +32,10 @@ public class StripeService {
     AppointmentService appointmentService;
     @Autowired
     ConsultantService consultantService;
+    @Autowired
+    ClientService clientService;
+    @Autowired
+    AuthService authService;
 
 //    @Value("${stripe.api.key}")
 //    private String stripeApiKey;
@@ -81,9 +91,28 @@ public class StripeService {
                 .putExtraParam("expires_at", expiresAt)
                 .build();
         Session session = Session.create(params);
-        //rs.addSessionId(session.getId(), userId, eventId);
+        appointmentService.addStripeSessionId(session.getId(), uuid);
         return session;
     }
+
+    public void createRefund(long appointmentId) throws SQLException, StripeException {
+
+        Stripe.apiKey = System.getenv("STRIPE_API");
+
+        String sessionId = appointmentService.getStripeSessionId(appointmentId);
+        BigDecimal price = appointmentService.getAppointmentById(appointmentId).getPrice();
+
+        Session session = Session.retrieve(sessionId);
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(session.getPaymentIntent());
+
+        Charge charge = Charge.retrieve(paymentIntent.getLatestCharge());
+
+        RefundCreateParams params =
+                RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue()).build();
+
+        Refund refund = Refund.create(params);
+    }
+
 
     public boolean setAppointmentPaymentStatusTrue(UUID uuid){
         try{
