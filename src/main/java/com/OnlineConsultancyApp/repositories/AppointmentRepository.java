@@ -152,7 +152,7 @@ public class AppointmentRepository {
     }
 
     public String getStripeSessionId(long id) throws SQLException {
-        PreparedStatement ps = Connect.SQLConnection("SELECT stripe_session_id FROM appointments WHERE _id = ?");
+        PreparedStatement ps = Connect.SQLConnection("SELECT stripe_session_id FROM appointments WHERE id = ?");
         ps.setLong(1, id);
         ResultSet rs = ps.executeQuery();
         if(rs.next()){

@@ -33,8 +33,6 @@ public class StripeService {
     @Autowired
     ConsultantService consultantService;
     @Autowired
-    ClientService clientService;
-    @Autowired
     AuthService authService;
 
 //    @Value("${stripe.api.key}")
@@ -95,12 +93,14 @@ public class StripeService {
         return session;
     }
 
-    public void createRefund(long appointmentId) throws SQLException, StripeException {
-
+    public void createRefund(String token, long appointmentId) throws SQLException, StripeException, JsonProcessingException {
+        authService.authenticateRole(token);
         Stripe.apiKey = System.getenv("STRIPE_API");
 
         String sessionId = appointmentService.getStripeSessionId(appointmentId);
-        BigDecimal price = appointmentService.getAppointmentById(appointmentId).getPrice();
+        Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+        Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
+        BigDecimal price = appointment.getPrice();
 
         Session session = Session.retrieve(sessionId);
         PaymentIntent paymentIntent = PaymentIntent.retrieve(session.getPaymentIntent());
@@ -108,9 +108,10 @@ public class StripeService {
         Charge charge = Charge.retrieve(paymentIntent.getLatestCharge());
 
         RefundCreateParams params =
-                RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue()).build();
+                RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue() * 100).build();
 
         Refund refund = Refund.create(params);
+        appointmentService.deleteAppointment(appointmentId, consultantService.getDates(consultant.getId()), appointment.getTimeAndDate(), consultant.getId());
     }
 
 

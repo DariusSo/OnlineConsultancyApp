@@ -63,16 +63,4 @@ public class AppointmentController {
             return new ResponseEntity<>("No access", HttpStatus.UNAUTHORIZED);
         }
     }
-    @GetMapping("/cancel")
-    public ResponseEntity<String> cancelAppointment(@RequestHeader("Authorization") String token, long appointmentId){
-        try{
-            appointmentService.cancelAppointment(token, appointmentId);
-            return new ResponseEntity<>("Success, appointment canceled.", HttpStatus.OK);
-        } catch (StripeException | SQLException e) {
-            return new ResponseEntity<>("Stripe or SQL", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (NoAccessException e){
-            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
-        }
-    }
-
 }

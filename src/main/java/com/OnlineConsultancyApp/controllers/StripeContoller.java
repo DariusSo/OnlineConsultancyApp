@@ -1,12 +1,14 @@
 package com.OnlineConsultancyApp.controllers;
 
 
+import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.services.StripeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -37,6 +39,18 @@ public class StripeContoller {
             return ResponseEntity.badRequest().body(errorResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+    @DeleteMapping("/refund")
+    public ResponseEntity<String> createRefundAndCancelAppointment(@RequestHeader("Authorization") String token, long appointmentId){
+        try{
+            stripeService.createRefund(token, appointmentId);
+            return new ResponseEntity<>("Success, appointment canceled.", HttpStatus.OK);
+        } catch (StripeException | SQLException | JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Stripe or SQL", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (NoAccessException e){
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
     }
 

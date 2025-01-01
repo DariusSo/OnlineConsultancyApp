@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -33,10 +34,6 @@ public class AppointmentService {
     ClientService clientService;
     @Autowired
     RabbitMQService rabbitMQService;
-    @Autowired
-    AuthService authService;
-    @Autowired
-    StripeService stripeService;
 
 
     public void addAppointment(Appointment appointment, String token) throws Exception {
@@ -145,11 +142,6 @@ public class AppointmentService {
         return objectMapper.writeValueAsString(newList);
     }
 
-    public void cancelAppointment(String token, long appointmentId) throws StripeException, SQLException {
-        authService.authenticateRole(token);
-        stripeService.createRefund(appointmentId);
-    }
-
     public void deleteAppointment(long id, String availableTimeString, LocalDateTime appointmentDateAndTime, long consultantId) throws SQLException, JsonProcessingException {
         appointmentRepository.deleteAppointment(id);
         String dateString = addDateTolist(availableTimeString, appointmentDateAndTime);
@@ -177,9 +169,11 @@ public class AppointmentService {
         appointmentRepository.addStripeSessionId(sessionId, uuid);
     }
     public String getStripeSessionId(long appointmentId) throws SQLException {
+        //AppointmentRepository appointmentRepository = new AppointmentRepository();
         return appointmentRepository.getStripeSessionId(appointmentId);
     }
     public Appointment getAppointmentById(long id) throws SQLException {
+        //AppointmentRepository appointmentRepository = new AppointmentRepository();
         return appointmentRepository.getAppointmentsByAppointmenttId(id);
     }
 
