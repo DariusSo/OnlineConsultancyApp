@@ -156,8 +156,12 @@ public class AppointmentService {
                 new TypeReference<List<Map<String, String>>>() {}
         );
 
+        String formattedDate = String.valueOf(appointmentDateAndTime).replace('T', ' ');
+
         Map<String, String> dateToAdd = new HashMap<>();
-        dateToAdd.put("date", String.valueOf(appointmentDateAndTime));
+        dateToAdd.put("date", formattedDate);
+
+        availableTimeList.add(dateToAdd);
 
 
         return objectMapper.writeValueAsString(availableTimeList);

@@ -1,6 +1,7 @@
 package com.OnlineConsultancyApp.services;
 
 import com.OnlineConsultancyApp.enums.Roles;
+import com.OnlineConsultancyApp.exceptions.TooLateException;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.security.JwtDecoder;
@@ -99,19 +100,23 @@ public class StripeService {
 
         String sessionId = appointmentService.getStripeSessionId(appointmentId);
         Appointment appointment = appointmentService.getAppointmentById(appointmentId);
-        Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
-        BigDecimal price = appointment.getPrice();
+        if(!appointment.isAccepted()){
+            Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
+            BigDecimal price = appointment.getPrice();
 
-        Session session = Session.retrieve(sessionId);
-        PaymentIntent paymentIntent = PaymentIntent.retrieve(session.getPaymentIntent());
+            Session session = Session.retrieve(sessionId);
+            PaymentIntent paymentIntent = PaymentIntent.retrieve(session.getPaymentIntent());
 
-        Charge charge = Charge.retrieve(paymentIntent.getLatestCharge());
+            Charge charge = Charge.retrieve(paymentIntent.getLatestCharge());
 
-        RefundCreateParams params =
-                RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue() * 100).build();
+            RefundCreateParams params =
+                    RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue() * 100).build();
 
-        Refund refund = Refund.create(params);
-        appointmentService.deleteAppointment(appointmentId, consultantService.getDates(consultant.getId()), appointment.getTimeAndDate(), consultant.getId());
+            Refund.create(params);
+            appointmentService.deleteAppointment(appointmentId, consultantService.getDates(consultant.getId()), appointment.getTimeAndDate(), consultant.getId());
+        }else{
+            throw new TooLateException();
+        }
     }
 
 

@@ -2,6 +2,7 @@ package com.OnlineConsultancyApp.controllers;
 
 
 import com.OnlineConsultancyApp.exceptions.NoAccessException;
+import com.OnlineConsultancyApp.exceptions.TooLateException;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.services.StripeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,11 +47,13 @@ public class StripeContoller {
         try{
             stripeService.createRefund(token, appointmentId);
             return new ResponseEntity<>("Success, appointment canceled.", HttpStatus.OK);
-        } catch (StripeException | SQLException | JsonProcessingException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Stripe or SQL", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (NoAccessException e){
             return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        } catch (TooLateException e){
+            return new ResponseEntity<>("Nice try", HttpStatus.I_AM_A_TEAPOT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Stripe or SQL", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
