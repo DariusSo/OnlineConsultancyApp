@@ -11,7 +11,6 @@ import com.OnlineConsultancyApp.models.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.sql.PreparedStatement;
@@ -43,11 +42,11 @@ public class ConsultantRepository {
         ps.setString(11, consultant.getPhone());
         ps.execute();
 
-        return getConsultantByEmail(consultant.getEmail()).getId();
+        return getConsultant(consultant.getEmail()).getId();
 
     }
 
-    public User getConsultantByEmail(String email) throws SQLException, JsonProcessingException {
+    public User getConsultant(String email) throws SQLException, JsonProcessingException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants WHERE email = ?");
 
         ps.setString(1, email);
@@ -65,7 +64,7 @@ public class ConsultantRepository {
         }
     }
 
-    public Consultant getConsultantById(long id) throws SQLException, JsonProcessingException {
+    public Consultant getConsultant(long id) throws SQLException, JsonProcessingException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants WHERE id = ?");
 
         ps.setLong(1, id);
@@ -81,6 +80,22 @@ public class ConsultantRepository {
         }else{
             throw new NoSuchUserException();
         }
+    }
+    public List<Consultant> getConsultantsByCategory(Categories category) throws SQLException {
+        List<Consultant> consultantList = new ArrayList<>();
+        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants WHERE categories = ?");
+        ps.setString(1, String.valueOf(category));
+        ResultSet rs = ps.executeQuery();
+
+        while(rs.next()) {
+            List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
+            Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
+                    rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
+                    rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+            consultantList.add(consultant);
+        }
+        return consultantList;
     }
 
     public List<Consultant> getNewestConsultants() throws SQLException, JsonProcessingException {

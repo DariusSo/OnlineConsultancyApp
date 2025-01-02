@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.controllers;
 
+import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.models.Consultant;
@@ -40,6 +41,16 @@ public class ConsultantController {
             return new ResponseEntity<>(new ArrayList<Consultant>(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }
+    }
+    @GetMapping("/category")
+    public ResponseEntity<List<Consultant>> getConsultantsByCategory(Categories category){
+        try{
+            List<Consultant> consultantList = consultantService.getConsultantsByCategory(category);
+            return new ResponseEntity<>(consultantList, HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ArrayList<Consultant>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -173,11 +173,9 @@ public class AppointmentService {
         appointmentRepository.addStripeSessionId(sessionId, uuid);
     }
     public String getStripeSessionId(long appointmentId) throws SQLException {
-        //AppointmentRepository appointmentRepository = new AppointmentRepository();
         return appointmentRepository.getStripeSessionId(appointmentId);
     }
     public Appointment getAppointmentById(long id) throws SQLException {
-        //AppointmentRepository appointmentRepository = new AppointmentRepository();
         return appointmentRepository.getAppointmentsByAppointmenttId(id);
     }
 

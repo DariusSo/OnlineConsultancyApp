@@ -35,7 +35,7 @@ public class ConsultantService {
 
     public void registerConsultant(Consultant consultant) throws SQLException, IOException, ClassNotFoundException {
         try{
-            consultantRepository.getConsultantByEmail(consultant.getEmail());
+            consultantRepository.getConsultant(consultant.getEmail());
             throw new UserAlreadyExistsException();
 
         }catch (NoSuchUserException e){
@@ -65,11 +65,11 @@ public class ConsultantService {
 
     public Consultant getConsultantById(String token) throws SQLException, JsonProcessingException {
         long id = JwtDecoder.decodedUserId(token);
-        return consultantRepository.getConsultantById(id);
+        return consultantRepository.getConsultant(id);
     }
 
     public Consultant getConsultantById(long id) throws SQLException, JsonProcessingException {
-        return consultantRepository.getConsultantById(id);
+        return consultantRepository.getConsultant(id);
     }
 
     public void updateAvailableTime(List<Map<String, String>> availableTime, String token) throws SQLException, JsonProcessingException {
@@ -116,6 +116,11 @@ public class ConsultantService {
         }
         return newConsultantList;
     }
+
+    public List<Consultant> getConsultantsByCategory(Categories category) throws SQLException {
+        return consultantRepository.getConsultantsByCategory(category);
+    }
+
     public String getDates(long id) throws SQLException {
         return consultantRepository.getDates(id);
     }
