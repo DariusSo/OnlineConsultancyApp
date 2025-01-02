@@ -1,6 +1,6 @@
 package com.OnlineConsultancyApp.services;
 
-import com.OnlineConsultancyApp.models.EmailMessage;
+import com.OnlineConsultancyApp.models.Messages.EmailMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

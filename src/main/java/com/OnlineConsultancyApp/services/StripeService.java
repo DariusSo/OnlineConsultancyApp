@@ -1,12 +1,9 @@
 package com.OnlineConsultancyApp.services;
 
-import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.exceptions.TooLateException;
 import com.OnlineConsultancyApp.models.Appointment;
-import com.OnlineConsultancyApp.models.Consultant;
-import com.OnlineConsultancyApp.security.JwtDecoder;
+import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
@@ -16,14 +13,11 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 @Service

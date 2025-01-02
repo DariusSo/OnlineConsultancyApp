@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum Roles {
     CLIENT,
-    CONSULTANT;
+    CONSULTANT,
+    USER,
+    ASSISTANT,
+    SYSTEM;
 
     @JsonCreator
     public static Categories fromString(String value) {

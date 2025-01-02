@@ -1,4 +1,4 @@
-package com.OnlineConsultancyApp.models;
+package com.OnlineConsultancyApp.models.Messages;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class EmailMessage {
-    private String receiver;
+public class Message {
     private String message;
 }

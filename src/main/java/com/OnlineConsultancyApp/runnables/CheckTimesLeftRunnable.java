@@ -2,7 +2,7 @@ package com.OnlineConsultancyApp.runnables;
 
 import com.OnlineConsultancyApp.config.Connect;
 import com.OnlineConsultancyApp.enums.Roles;
-import com.OnlineConsultancyApp.models.Consultant;
+import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;

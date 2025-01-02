@@ -1,6 +1,6 @@
 package com.OnlineConsultancyApp.controllers;
 
-import com.OnlineConsultancyApp.models.ChatMessage;
+import com.OnlineConsultancyApp.models.Messages.ChatMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

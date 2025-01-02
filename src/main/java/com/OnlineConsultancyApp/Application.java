@@ -1,11 +1,9 @@
 package com.OnlineConsultancyApp;
 
-import com.OnlineConsultancyApp.config.Connect;
-import com.OnlineConsultancyApp.models.Consultant;
 import com.OnlineConsultancyApp.runnables.CheckTimesLeftRunnable;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -18,10 +16,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 
 import java.time.Duration;
 
-import java.util.List;
-
 @SpringBootApplication
 @EnableCaching
+@EnableAutoConfiguration
 public class Application {
 
 	public static void main(String[] args) {

@@ -1,9 +1,6 @@
-package com.OnlineConsultancyApp.models;
+package com.OnlineConsultancyApp.models.Messages;
 
 import com.OnlineConsultancyApp.enums.MessageType;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +12,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ChatMessage {
+public class ChatMessage extends Message{
     private String name;
-    private String message;
     private LocalDateTime sentAt;
     private MessageType messageType;
+
+    public ChatMessage(String name, String message, LocalDateTime sentAt, MessageType messageType) {
+        super(message);
+        this.name = name;
+        this.sentAt = sentAt;
+        this.messageType = messageType;
+    }
 }

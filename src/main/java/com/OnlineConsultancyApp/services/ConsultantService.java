@@ -5,8 +5,8 @@ import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.exceptions.UserAlreadyExistsException;
 import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
-import com.OnlineConsultancyApp.models.Consultant;
-import com.OnlineConsultancyApp.models.User;
+import com.OnlineConsultancyApp.models.Users.Consultant;
+import com.OnlineConsultancyApp.models.Users.User;
 import com.OnlineConsultancyApp.repositories.ConsultantRepository;
 import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.security.JwtGenerator;
@@ -31,7 +31,7 @@ public class ConsultantService {
     ConsultantRepository consultantRepository = new ConsultantRepository();
 
     @Autowired
-    RedisService redisService;
+    RedisCacheService redisCacheService;
 
     public void registerConsultant(Consultant consultant) throws SQLException, IOException, ClassNotFoundException {
         try{
@@ -45,7 +45,7 @@ public class ConsultantService {
             consultant.setAvailableTime("[]");
             long id = consultantRepository.registerConsultant(consultant);
             consultant.setId(id);
-            redisService.put(consultant);
+            redisCacheService.put(consultant);
         }
     }
 

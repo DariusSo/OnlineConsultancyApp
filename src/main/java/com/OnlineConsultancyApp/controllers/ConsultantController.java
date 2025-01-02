@@ -1,11 +1,10 @@
 package com.OnlineConsultancyApp.controllers;
 
-import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.enums.Categories;
-import com.OnlineConsultancyApp.models.Consultant;
+import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.OnlineConsultancyApp.services.ConsultantService;
-import com.OnlineConsultancyApp.services.RedisService;
+import com.OnlineConsultancyApp.services.RedisCacheService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +29,12 @@ public class ConsultantController {
     ConsultantService consultantService;
 
     @Autowired
-    RedisService redisService;
+    RedisCacheService redisCacheService;
 
     @GetMapping("/newest")
     public ResponseEntity<List<Consultant>> getNewestConsultants(){
         try{
-            List<Consultant> consultantList = redisService.getNewConsultants();
+            List<Consultant> consultantList = redisCacheService.getNewConsultants();
             return new ResponseEntity<>(consultantList, HttpStatus.OK);
         } catch (JsonProcessingException e){
             return new ResponseEntity<>(new ArrayList<Consultant>(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,23 +1,22 @@
 package com.OnlineConsultancyApp.services;
 
-import com.OnlineConsultancyApp.models.Consultant;
+import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
 
 import java.io.IOException;
 import java.util.*;
 
 @Service
-public class RedisService {
+public class RedisCacheService {
 
     private final JedisPool jedisPool;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RedisService() {
+    public RedisCacheService() {
         String host = "localhost";
         int port = 6379;
         this.jedisPool = new JedisPool(host, port);

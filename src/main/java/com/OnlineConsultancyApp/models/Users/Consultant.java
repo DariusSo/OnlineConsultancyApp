@@ -1,6 +1,5 @@
-package com.OnlineConsultancyApp.models;
+package com.OnlineConsultancyApp.models.Users;
 
-import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,15 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Consultant extends User{
+public class Consultant extends User {
 
     private String categories;
     private String availableTime;

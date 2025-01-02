@@ -1,4 +1,4 @@
-package com.OnlineConsultancyApp.models;
+package com.OnlineConsultancyApp.models.Users;
 
 import com.OnlineConsultancyApp.enums.Roles;
 import lombok.AllArgsConstructor;
@@ -7,14 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Client extends User{
+public class Client extends User {
 
     private LocalDate birthDate;
 

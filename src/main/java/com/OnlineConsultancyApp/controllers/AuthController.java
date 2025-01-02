@@ -1,9 +1,9 @@
 package com.OnlineConsultancyApp.controllers;
 
 import com.OnlineConsultancyApp.exceptions.*;
-import com.OnlineConsultancyApp.models.Client;
-import com.OnlineConsultancyApp.models.Consultant;
-import com.OnlineConsultancyApp.models.User;
+import com.OnlineConsultancyApp.models.Users.Client;
+import com.OnlineConsultancyApp.models.Users.Consultant;
+import com.OnlineConsultancyApp.models.Users.User;
 import com.OnlineConsultancyApp.services.AuthService;
 import com.OnlineConsultancyApp.services.ClientService;
 import com.OnlineConsultancyApp.services.ConsultantService;
