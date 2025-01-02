@@ -43,7 +43,7 @@ public class AIChatService {
     }
     public String askAIConsultant(String token, String message, Categories consultantCategory) throws SQLException, IOException, ClassNotFoundException {
         User user = authService.getProfileInfo(token);
-        List<Map<String, String>> conversation = getConversation(user.getId(), user.getRole());
+        List<Map<String, String>> conversation = getConversation(user.getId(), user.getRole(), consultantCategory);
 
         Map<String, String> userMessage = new HashMap<>();
         userMessage.put("role", String.valueOf(Roles.USER).toLowerCase());
@@ -57,12 +57,16 @@ public class AIChatService {
         assistantMessage.put("role", String.valueOf(Roles.ASSISTANT).toLowerCase());
         assistantMessage.put("content", response);
         conversation.add(assistantMessage);
+        if(conversation.size() > 8){
+            conversation.remove(0);
+            conversation.remove(0);
+        }
         String conversationStringAgain = serializeToString(conversation);
-        redisConversationService.putConversation(conversationStringAgain, user.getId(), user.getRole());
+        redisConversationService.putConversation(conversationStringAgain, user.getId(), user.getRole(), consultantCategory);
         return response;
     }
-    public List<Map<String, String>> getConversation(long id, Roles role) throws IOException, ClassNotFoundException {
-        String conversationString = redisConversationService.getConversation(id, role);
+    public List<Map<String, String>> getConversation(long id, Roles role, Categories consultantCategory) throws IOException, ClassNotFoundException {
+        String conversationString = redisConversationService.getConversation(id, role, consultantCategory);
         return deserializeConversation(conversationString);
     }
     public List<Map<String, String>> deserializeConversation(String conversationString) throws JsonProcessingException {

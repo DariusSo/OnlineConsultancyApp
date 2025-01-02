@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.services;
 
+import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.models.Users.Consultant;
@@ -26,23 +27,23 @@ public class RedisConversationService {
         this.jedisPool = new JedisPool(host, port);
     }
 
-    public void putConversation(String conversationString, long userId, Roles role) throws IOException, ClassNotFoundException {
-        String prefix = getPrefix(role);
+    public void putConversation(String conversationString, long userId, Roles role, Categories consultantCategory) throws IOException, ClassNotFoundException {
+        String prefix = getPrefix(role, consultantCategory);
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.set(prefix + userId, conversationString);
         }
     }
-    public String getConversation(long userId, Roles role) throws IOException, ClassNotFoundException {
-        String prefix = getPrefix(role);
+    public String getConversation(long userId, Roles role, Categories consultantCategory) throws IOException, ClassNotFoundException {
+        String prefix = getPrefix(role, consultantCategory);
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis.get(prefix + userId);
         }
     }
-    public String getPrefix(Roles role){
+    public String getPrefix(Roles role, Categories consultantCategory){
         if(role == Roles.CLIENT){
-            return "client-";
+            return consultantCategory + "-client-";
         } else if (role == Roles.CONSULTANT) {
-            return "consultant-";
+            return consultantCategory + "-consultant-";
         }else{
             throw new ThereIsNoSuchRoleException();
         }
