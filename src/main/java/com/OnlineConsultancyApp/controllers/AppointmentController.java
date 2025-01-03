@@ -1,9 +1,16 @@
 package com.OnlineConsultancyApp.controllers;
 
+import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.models.Appointment;
+import com.OnlineConsultancyApp.models.Users.Client;
+import com.OnlineConsultancyApp.models.Users.User;
+import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.services.AppointmentService;
+import com.OnlineConsultancyApp.services.ClientService;
+import com.OnlineConsultancyApp.services.ConsultantService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.exception.StripeException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +68,18 @@ public class AppointmentController {
             return new ResponseEntity<>("Database problems", HttpStatus.BAD_GATEWAY);
         } catch (NoAccessException e){
             return new ResponseEntity<>("No access", HttpStatus.UNAUTHORIZED);
+        }
+    }
+    @GetMapping("/info")
+    public ResponseEntity<User> getUserInfo(@RequestHeader("Authorization") String token, long appointmentId){
+        try{
+            User user = appointmentService.getUserInfo(token, appointmentId);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+
+        } catch (SQLException | JsonProcessingException e) {
+            return new ResponseEntity<>(new Client(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e){
+            return new ResponseEntity<>(new Client(), HttpStatus.UNAUTHORIZED);
         }
     }
 }

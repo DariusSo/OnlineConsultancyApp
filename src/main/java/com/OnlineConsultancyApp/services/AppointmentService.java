@@ -8,6 +8,7 @@ import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.models.Users.Client;
 import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.OnlineConsultancyApp.models.Messages.EmailMessage;
+import com.OnlineConsultancyApp.models.Users.User;
 import com.OnlineConsultancyApp.repositories.AppointmentRepository;
 import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +16,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -164,6 +167,25 @@ public class AppointmentService {
 
         return objectMapper.writeValueAsString(availableTimeList);
     }
+    public User getUserInfo(String token, long appointmentId) throws SQLException, JsonProcessingException {
+        Appointment appointment = getAppointmentById(appointmentId);
+        Roles role = JwtDecoder.decodedRole(token);
+        long userId = JwtDecoder.decodedUserId(token);
+        if(role == Roles.CLIENT){
+            if(userId == appointment.getUserId()){
+                return consultantService.getConsultantById(appointment.getConsultantId());
+            }
+        } else if (role == Roles.CONSULTANT) {
+            if(userId == appointment.getConsultantId()){
+                return clientService.getClientById(appointment.getUserId());
+            }
+        } else{
+            throw new NoAccessException();
+        }
+
+        return new Client();
+    }
+
     public Appointment getByRoomUuid(UUID uuid) throws SQLException {
         return appointmentRepository.getAppointmentsRoomUuid(uuid);
     }
