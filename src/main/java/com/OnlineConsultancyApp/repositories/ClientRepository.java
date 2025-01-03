@@ -62,7 +62,7 @@ public class ClientRepository {
         ResultSet rs = ps.executeQuery();
 
         if(rs.next()){
-            List<Long> appointmentList = objectMapper.readValue(rs.getString("appointments_ids"), List.class);
+            List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
             User client = new Client(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     LocalDate.parse(rs.getString("birth_date")));

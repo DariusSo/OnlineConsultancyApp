@@ -50,13 +50,9 @@ public class StripeService {
     }
 
     public Session createCheckoutSession(Appointment appointment, String token) throws Exception {
+        UUID uuid = UUID.randomUUID();
 
         Stripe.apiKey = System.getenv("STRIPE_API");
-
-        UUID uuid = UUID.randomUUID();
-        appointment.setUuid(String.valueOf(uuid));
-        appointment.setPaid(false);
-        appointment.setAccepted(false);
 
         Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
         BigDecimal amount = consultant.getHourlyRate();
@@ -66,11 +62,18 @@ public class StripeService {
                 " " +
                 consultant.getLastName();
         long expiresAt = (System.currentTimeMillis() / 1000) + 1800;
-        appointmentService.addAppointment(appointment, token);
+        if(appointment.getUuid() != null){
+            uuid = UUID.fromString(appointment.getUuid());
+        }else{
+            appointment.setPaid(false);
+            appointment.setAccepted(false);
+            appointment.setUuid(String.valueOf(uuid));
+            appointmentService.addAppointment(appointment, token);
+        }
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl("http://localhost:8080/redirect?uuid=" + uuid)
-                .setCancelUrl("http://localhost:7777/index.html")
+                .setCancelUrl("http://localhost:5173/error")
                 .addLineItem(SessionCreateParams.LineItem.builder()
                         .setQuantity(1L)
                         .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
@@ -94,22 +97,26 @@ public class StripeService {
 
         String sessionId = appointmentService.getStripeSessionId(appointmentId);
         Appointment appointment = appointmentService.getAppointmentById(appointmentId);
-        if(!appointment.isAccepted()){
-            Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
-            BigDecimal price = appointment.getPrice();
-
-            Session session = Session.retrieve(sessionId);
-            PaymentIntent paymentIntent = PaymentIntent.retrieve(session.getPaymentIntent());
-
-            Charge charge = Charge.retrieve(paymentIntent.getLatestCharge());
-
-            RefundCreateParams params =
-                    RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue() * 100).build();
-
-            Refund.create(params);
+        Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
+        if(!appointment.isPaid()){
             appointmentService.deleteAppointment(appointmentId, consultantService.getDates(consultant.getId()), appointment.getTimeAndDate(), consultant.getId());
         }else{
-            throw new TooLateException();
+            if(!appointment.isAccepted()){
+                BigDecimal price = appointment.getPrice();
+
+                Session session = Session.retrieve(sessionId);
+                PaymentIntent paymentIntent = PaymentIntent.retrieve(session.getPaymentIntent());
+
+                Charge charge = Charge.retrieve(paymentIntent.getLatestCharge());
+
+                RefundCreateParams params =
+                        RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue() * 100).build();
+
+                Refund.create(params);
+                appointmentService.deleteAppointment(appointmentId, consultantService.getDates(consultant.getId()), appointment.getTimeAndDate(), consultant.getId());
+            }else{
+                throw new TooLateException();
+            }
         }
     }
 
