@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -185,6 +186,16 @@ public class AppointmentService {
 
         return new Client();
     }
+
+    public boolean connectToAppointment(UUID roomUuid) throws SQLException {
+        Appointment appointment = appointmentRepository.getAppointmentsRoomUuid(roomUuid);
+        long difference = Duration.between(LocalDateTime.now(), appointment.getTimeAndDate()).toMinutes();
+        if(difference > 5){
+            return false;
+        }
+        return true;
+    }
+
 
     public Appointment getByRoomUuid(UUID uuid) throws SQLException {
         return appointmentRepository.getAppointmentsRoomUuid(uuid);

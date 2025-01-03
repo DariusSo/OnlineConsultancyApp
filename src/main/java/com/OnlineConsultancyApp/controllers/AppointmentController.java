@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/appointments")
@@ -78,8 +79,18 @@ public class AppointmentController {
 
         } catch (SQLException | JsonProcessingException e) {
             return new ResponseEntity<>(new Client(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e){
+        } catch (NoAccessException e){
             return new ResponseEntity<>(new Client(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e){
+            return new ResponseEntity<>(new Client(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/connect")
+    public boolean connectToAppointment(UUID roomUuid) throws SQLException {
+        if(appointmentService.connectToAppointment(roomUuid)){
+            return true;
+        }else{
+            return false;
         }
     }
 }
