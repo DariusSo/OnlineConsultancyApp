@@ -4,6 +4,7 @@ import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.enums.Roles;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
 
 import java.nio.charset.StandardCharsets;
@@ -25,7 +26,7 @@ public class JwtDecoder {
         return claims;
     }
 
-    public static long decodedUserId(String jwt){
+    public static long decodedUserId(String jwt) throws MalformedJwtException {
         Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
         Claims claims = Jwts.parserBuilder()
@@ -33,7 +34,6 @@ public class JwtDecoder {
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-
        return Long.parseLong(String.valueOf(claims.get("UserId")));
     }
 

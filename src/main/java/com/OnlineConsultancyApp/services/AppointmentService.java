@@ -27,8 +27,7 @@ import java.util.*;
 @Service
 public class AppointmentService {
 
-    @Autowired
-    AppointmentRepository appointmentRepository;
+    AppointmentRepository appointmentRepository = new AppointmentRepository();
     @Autowired
     ConsultantService consultantService;
     @Autowired
@@ -148,11 +147,15 @@ public class AppointmentService {
         }
         return Utilities.serializeToString(newList);
     }
-
+    //Canceling
     public void deleteAppointment(long id, String availableTimeString, LocalDateTime appointmentDateAndTime, long consultantId) throws SQLException, JsonProcessingException {
         appointmentRepository.deleteAppointment(id);
         String dateString = addDateTolist(availableTimeString, appointmentDateAndTime);
         consultantService.updateAvailableTime(dateString, consultantId);
+    }
+    //When ended
+    public void deleteAppointment(long id) throws SQLException, JsonProcessingException {
+        appointmentRepository.deleteAppointment(id);
     }
 
     public String addDateTolist(String availableTimeString, LocalDateTime appointmentDateAndTime) throws JsonProcessingException {

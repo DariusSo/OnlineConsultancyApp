@@ -26,11 +26,11 @@ public class RedisConversationService {
         int port = 6379;
         this.jedisPool = new JedisPool(host, port);
     }
-
+    //Store conversation with 1 hour expiration
     public void putConversation(String conversationString, long userId, Roles role, Categories consultantCategory) throws IOException, ClassNotFoundException {
         String prefix = getPrefix(role, consultantCategory);
         try (Jedis jedis = jedisPool.getResource()) {
-            jedis.set(prefix + userId, conversationString);
+            jedis.setex(prefix + userId, 3600, conversationString);
         }
     }
     public String getConversation(long userId, Roles role, Categories consultantCategory) throws IOException, ClassNotFoundException {
