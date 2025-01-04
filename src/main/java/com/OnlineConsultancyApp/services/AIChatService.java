@@ -35,36 +35,56 @@ public class AIChatService {
     }
 
     public String getAIResponse(String message, Categories consultantCategory) {
-        // Process the message with the AI ChatClient and return the result
+        // Process the message with the AI and return the result
         return chatClient.prompt()
-                .user(message).system("You are " + consultantCategory + " expert. Your job is to consult people about your expertise. You are not allow to talk about anything else.")
+                .user(message).system("You are " + consultantCategory + " expert. Your job is to consult people about your expertise. " +
+                        "                   You are not allow to talk about anything else.")
                 .call()
                 .content();
     }
     public String askAIConsultant(String token, String message, Categories consultantCategory) throws SQLException, IOException, ClassNotFoundException {
+        //Validate and get info
         User user = authService.getProfileInfo(token);
+
+        //Get conversation from redis
         List<Map<String, String>> conversation = getConversation(user.getId(), user.getRole(), consultantCategory);
 
-        Map<String, String> userMessage = new HashMap<>();
-        userMessage.put("role", String.valueOf(Roles.USER).toLowerCase());
-        userMessage.put("content", message);
-        conversation.add(userMessage);
-        String conversationString = serializeToString(conversation);
+        //Add user message to conversation
+        conversation = updateConversation(conversation, message, Roles.USER);
 
+        //Serialize and send message to chatGPT
+        String conversationString = serializeToString(conversation);
         String response = getAIResponse(conversationString, consultantCategory);
+
+        //Update conversation with AI response
         conversation = deserializeConversation(conversationString);
-        Map<String, String> assistantMessage = new HashMap<>();
-        assistantMessage.put("role", String.valueOf(Roles.ASSISTANT).toLowerCase());
-        assistantMessage.put("content", response);
-        conversation.add(assistantMessage);
+        conversation = updateConversation(conversation, response, Roles.ASSISTANT);
+
+        //Keep limited conversations because of money
+        conversation = trimConversationMaybe(conversation);
+
+        //Put updated conversation to redis
+        String conversationStringAgain = serializeToString(conversation);
+        redisConversationService.putConversation(conversationStringAgain, user.getId(), user.getRole(), consultantCategory);
+
+        return response;
+    }
+    public List<Map<String, String>> updateConversation(List<Map<String, String>> conversation, String message, Roles role){
+        Map<String, String> messageToAdd = new HashMap<>();
+        messageToAdd.put("role", String.valueOf(role).toLowerCase());
+        messageToAdd.put("content", message);
+        conversation.add(messageToAdd);
+        return conversation;
+    }
+
+    public List<Map<String, String>> trimConversationMaybe(List<Map<String, String>> conversation){
         if(conversation.size() > 8){
             conversation.remove(0);
             conversation.remove(0);
         }
-        String conversationStringAgain = serializeToString(conversation);
-        redisConversationService.putConversation(conversationStringAgain, user.getId(), user.getRole(), consultantCategory);
-        return response;
+        return conversation;
     }
+
     public List<Map<String, String>> getConversation(long id, Roles role, Categories consultantCategory) throws IOException, ClassNotFoundException {
         String conversationString = redisConversationService.getConversation(id, role, consultantCategory);
         return deserializeConversation(conversationString);

@@ -88,21 +88,4 @@ public class ClientRepository {
             throw new BadEmailOrPasswordException();
         }
     }
-
-    public void addAppointment(long id, long appointmentId) throws SQLException, JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Client client = getClientById(id);
-        List<Long> appointmentList = client.getAppointmentsId();
-        if(appointmentList == null){
-            appointmentList = new ArrayList<>();
-        }
-        appointmentList.add(appointmentId);
-
-        String appointmentsIdString = objectMapper.writeValueAsString(appointmentList);
-
-        PreparedStatement ps = Connect.SQLConnection("UPDATE clients SET appointments_ids = ? WHERE id = ?");
-        ps.setString(1, appointmentsIdString);
-        ps.setLong(2, id);
-    }
 }

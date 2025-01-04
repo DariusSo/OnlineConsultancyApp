@@ -20,7 +20,7 @@ public class ClientService {
 
     @Autowired
     ClientRepository clientRepository;
-
+    //Adding to db and password hashing
     public void registerClient(Client client) throws SQLException, JsonProcessingException {
         try{
             clientRepository.getClientByEmail(client.getEmail());
@@ -32,7 +32,7 @@ public class ClientService {
             clientRepository.registerClient(client);
         }
     }
-
+    //Checking credentials and generating jwt token
     public String authenticateClient(String email, String password) throws SQLException {
         User client = clientRepository.getAuthUser(email);
         boolean authenticated = BCrypt.checkpw(password, client.getPassword());
@@ -45,9 +45,5 @@ public class ClientService {
 
     public Client getClientById(long id) throws SQLException, JsonProcessingException {
         return clientRepository.getClientById(id);
-    }
-
-    public void addAppointment(long id, long appointmentId) throws SQLException, JsonProcessingException {
-        clientRepository.addAppointment(id, appointmentId);
     }
 }

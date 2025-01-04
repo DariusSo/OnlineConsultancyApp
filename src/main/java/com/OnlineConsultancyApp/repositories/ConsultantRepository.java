@@ -150,7 +150,7 @@ public class ConsultantRepository {
         }
     }
 
-    public List<Consultant> getConsultantsWithHourlyRateFilter(double minPrice, double maxPrice, String speciality) throws SQLException {
+    public List<Consultant> getConsultantsWithoutCategory(double minPrice, double maxPrice, String speciality) throws SQLException {
         List<Consultant> consultantList = new ArrayList<>();
 
         PreparedStatement pr = Connect.SQLConnection("SELECT * FROM consultants WHERE hourly_rate > ? AND hourly_rate < ? AND speciality LIKE ?");
@@ -172,7 +172,7 @@ public class ConsultantRepository {
         return consultantList;
     }
 
-    public List<Consultant> getConsultantsWithHourlyRateAndCategoryFilter(double minPrice, double maxPrice, String speciality, Categories category) throws SQLException {
+    public List<Consultant> getConsultantsWithCategory(double minPrice, double maxPrice, String speciality, Categories category) throws SQLException {
         List<Consultant> consultantList = new ArrayList<>();
 
         PreparedStatement pr = Connect.SQLConnection("SELECT * FROM consultants WHERE hourly_rate > ? AND hourly_rate < ? AND speciality LIKE ? AND categories = ?");

@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.services;
 
+import com.OnlineConsultancyApp.Utilities;
 import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
 import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.exceptions.UserAlreadyExistsException;
@@ -11,8 +12,6 @@ import com.OnlineConsultancyApp.repositories.ConsultantRepository;
 import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.security.JwtGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class ConsultantService {
 
     @Autowired
     RedisCacheService redisCacheService;
-
+    //Registering and caching on redis
     public void registerConsultant(Consultant consultant) throws SQLException, IOException, ClassNotFoundException {
         try{
             consultantRepository.getConsultant(consultant.getEmail());
@@ -48,7 +47,7 @@ public class ConsultantService {
             redisCacheService.put(consultant);
         }
     }
-
+    //Checking credentials and generating jwt token
     public String authenticateConsultant(String email, String password) throws SQLException {
         User client = consultantRepository.getAuthUser(email);
         boolean authenticated = BCrypt.checkpw(password, client.getPassword());
@@ -71,43 +70,45 @@ public class ConsultantService {
     public Consultant getConsultantById(long id) throws SQLException, JsonProcessingException {
         return consultantRepository.getConsultant(id);
     }
-
+    //For updating straight from controller
     public void updateAvailableTime(List<Map<String, String>> availableTime, String token) throws SQLException, JsonProcessingException {
         long userId = JwtDecoder.decodedUserId(token);
-        String dates = new ObjectMapper().writeValueAsString(availableTime);
+        String dates = Utilities.serializeToString(availableTime);
         consultantRepository.updateDates(dates, userId);
 
     }
+    //For updating from other services
     public void updateAvailableTime(String availableTime, long userId) throws SQLException, JsonProcessingException {
         consultantRepository.updateDates(availableTime, userId);
     }
-
+    //Search method
     public List<Consultant> getConsultantsWithFilters(double minPrice, double maxPrice, String speciality, Categories category, LocalDate date) throws SQLException, JsonProcessingException {
         List<Consultant> consultantList = new ArrayList<>();
         if(category.equals(Categories.ALL)){
-            consultantList = consultantRepository.getConsultantsWithHourlyRateFilter(minPrice, maxPrice, speciality);
+            consultantList = consultantRepository.getConsultantsWithoutCategory(minPrice, maxPrice, speciality);
         }else{
-            consultantList = consultantRepository.getConsultantsWithHourlyRateAndCategoryFilter(minPrice, maxPrice, speciality, category);
+            consultantList = consultantRepository.getConsultantsWithCategory(minPrice, maxPrice, speciality, category);
         }
+        //If we are getting date we need to deserialize string and check who is available
         if(date != null){
             return getConsultantsByDate(consultantList, date);
         }
         return consultantList;
     }
-
+    //For getting availability by date
     public List<Consultant> getConsultantsByDate(List<Consultant> consultantList, LocalDate date) throws JsonProcessingException {
         List<Consultant> newConsultantList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        //Iterate through consultants which are found by other search parameters
         for(Consultant c : consultantList){
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Map<String, String>> availableTimeList = objectMapper.readValue(
-                    c.getAvailableTime(),
-                    new TypeReference<List<Map<String, String>>>() {}
-            );
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            //Deserialized time list
+            List<Map<String, String>> availableTimeList = Utilities.deserializeAvailableTime(c.getAvailableTime());
+            //Iterate through time list
             for(Map<String, String> m : availableTimeList){
+                //Setting dates
                 LocalDate dateToCompare = LocalDate.parse(m.get("date").split(" ")[0], formatter);
                 LocalDate selectedDate = LocalDate.parse(String.valueOf(date), formatter);
+                //Comparing
                 if(dateToCompare.equals(selectedDate)){
                     newConsultantList.add(c);
                     break;

@@ -26,7 +26,7 @@ public class AuthService {
     @Autowired
     AppointmentService appointmentService;
 
-
+    //For login
     public String authenticate(User user) throws SQLException, BadRequestException {
         if(user instanceof Client){
             return clientService.authenticateClient(user.getEmail(), user.getPassword());
@@ -36,6 +36,7 @@ public class AuthService {
             throw new BadRequestException();
         }
     }
+    //For getting logged in users info
     public User getProfileInfo(String jwtToken) throws SQLException, JsonProcessingException {
         long id = JwtDecoder.decodedUserId(jwtToken);
         Roles role = JwtDecoder.decodedRole(jwtToken);
@@ -47,14 +48,14 @@ public class AuthService {
             throw new ThereIsNoSuchRoleException();
         }
     }
-
+    //For authenticating appointment room access
     public void authenticate(String token, UUID roomUuid) throws SQLException {
         long userId = JwtDecoder.decodedUserId(token);
         Roles role = JwtDecoder.decodedRole(token);
         Appointment appointment = appointmentService.getByRoomUuid(roomUuid);
         checkAuth(role, userId, appointment);
     }
-
+    //For authenticating appointment access
     public void checkAuth(Roles role, long userId, Appointment appointment){
         if(role == Roles.CLIENT){
             if(appointment.getUserId() == userId){
@@ -72,7 +73,7 @@ public class AuthService {
             throw new ThereIsNoSuchRoleException();
         }
     }
-
+    //Authenticating role for refunds
     public void authenticateRole(String token) throws NoAccessException{
         Roles role = JwtDecoder.decodedRole(token);
         if(role == Roles.CLIENT || role == Roles.CONSULTANT){

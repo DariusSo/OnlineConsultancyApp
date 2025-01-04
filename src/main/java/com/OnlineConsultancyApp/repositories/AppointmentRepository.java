@@ -112,7 +112,6 @@ public class AppointmentRepository {
     }
 
     public long getAppointmentId(long userId, long consultantId) throws SQLException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM appointments WHERE user_id = ? AND consultant_id = ?");
         ps.setLong(1, userId);
         ps.setLong(2, consultantId);

@@ -48,28 +48,27 @@ public class StripeService {
 
         return PaymentIntent.create(params);
     }
-
+    //Payment with appointment creation
     public Session createCheckoutSession(Appointment appointment, String token) throws Exception {
         UUID uuid = UUID.randomUUID();
 
         Stripe.apiKey = System.getenv("STRIPE_API");
 
+        //Set price, because it can come different from front end
         Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
         BigDecimal amount = consultant.getHourlyRate();
         appointment.setPrice(amount);
-        String paymentTitle = "Appointment with " +
-                consultant.getFirstName() +
-                " " +
-                consultant.getLastName();
-        long expiresAt = (System.currentTimeMillis() / 1000) + 1800;
+
+        //This checks if appointment payment was canceled and trying to pay again, setting data accordingly
         if(appointment.getUuid() != null){
             uuid = UUID.fromString(appointment.getUuid());
         }else{
             appointment.setPaid(false);
             appointment.setAccepted(false);
             appointment.setUuid(String.valueOf(uuid));
-            appointmentService.addAppointment(appointment, token);
+            appointmentService.createAppointment(appointment, token);
         }
+        //Stripe session params
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl("http://localhost:8080/redirect?uuid=" + uuid)
@@ -80,13 +79,15 @@ public class StripeService {
                                 .setCurrency("eur")
                                 .setUnitAmount((long) Double.parseDouble(String.valueOf(appointment.getPrice())) * 100)
                                 .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                        .setName(paymentTitle)
+                                        .setName("Appointment with " + consultant.getFirstName() + " " + consultant.getLastName())
                                         .build())
                                 .build())
                         .build())
-                .putExtraParam("expires_at", expiresAt)
+                .putExtraParam("expires_at", (System.currentTimeMillis() / 1000) + 1800)
                 .build();
+        //Creating session
         Session session = Session.create(params);
+        //Adding Stripe session id for refunds
         appointmentService.addStripeSessionId(session.getId(), uuid);
         return session;
     }
@@ -95,12 +96,16 @@ public class StripeService {
         authService.authenticateRole(token);
         Stripe.apiKey = System.getenv("STRIPE_API");
 
+        //Getting data
         String sessionId = appointmentService.getStripeSessionId(appointmentId);
         Appointment appointment = appointmentService.getAppointmentById(appointmentId);
         Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
+
+        //Check for appointments that have been canceled during payment
         if(!appointment.isPaid()){
             appointmentService.deleteAppointment(appointmentId, consultantService.getDates(consultant.getId()), appointment.getTimeAndDate(), consultant.getId());
         }else{
+            //Stripe refund
             if(!appointment.isAccepted()){
                 BigDecimal price = appointment.getPrice();
 
@@ -113,6 +118,7 @@ public class StripeService {
                         RefundCreateParams.builder().setCharge(String.valueOf(charge.getId())).setAmount((long) price.doubleValue() * 100).build();
 
                 Refund.create(params);
+                //If everything ok, delete appointment
                 appointmentService.deleteAppointment(appointmentId, consultantService.getDates(consultant.getId()), appointment.getTimeAndDate(), consultant.getId());
             }else{
                 throw new TooLateException();
@@ -126,8 +132,7 @@ public class StripeService {
             appointmentService.updatePaymentStatus(uuid);
             return true;
         }catch (Exception e){
-
+            return false;
         }
-        return false;
     }
 }
