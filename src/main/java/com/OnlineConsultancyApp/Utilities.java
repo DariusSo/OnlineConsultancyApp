@@ -20,9 +20,9 @@ public class Utilities {
                 new TypeReference<List<Map<String, String>>>() {}
         );
     }
-    public static String serializeToString(Object object) throws JsonProcessingException {
+    public static String serializeToString(List<Map<String, String>> object) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(objectMapper);
+        return objectMapper.writeValueAsString(object);
     }
 
 

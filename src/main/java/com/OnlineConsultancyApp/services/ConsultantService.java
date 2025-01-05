@@ -47,6 +47,12 @@ public class ConsultantService {
             redisCacheService.put(consultant);
         }
     }
+
+    public void editConsultant(Consultant consultant, String token) throws SQLException {
+        long id = JwtDecoder.decodedUserId(token);
+        consultantRepository.editConsultant(consultant, id);
+    }
+
     //Checking credentials and generating jwt token
     public String authenticateConsultant(String email, String password) throws SQLException {
         User client = consultantRepository.getAuthUser(email);

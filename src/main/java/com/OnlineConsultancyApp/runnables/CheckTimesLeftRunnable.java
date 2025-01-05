@@ -38,7 +38,7 @@ public class CheckTimesLeftRunnable implements Runnable {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            CountDownLatch countDownLatch = new CountDownLatch(8);
+            CountDownLatch countDownLatch = new CountDownLatch(4);
 
             Thread thread1 = new Thread(new ProccessTimeRunnable(countDownLatch));
             Thread thread2 = new Thread(new ProccessTimeRunnable(countDownLatch));
@@ -87,7 +87,7 @@ public class CheckTimesLeftRunnable implements Runnable {
             Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
             consultantList.add(consultant);
         }
     }

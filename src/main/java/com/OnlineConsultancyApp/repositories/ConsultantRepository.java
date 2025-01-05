@@ -45,6 +45,20 @@ public class ConsultantRepository {
         return getConsultant(consultant.getEmail()).getId();
 
     }
+    public void editConsultant(Consultant consultant, long id) throws SQLException {
+        PreparedStatement ps = Connect.SQLConnection("UPDATE consultants SET first_name = ?, last_name = ?, email = ?," +
+                " speciality = ?, description = ?, hourly_rate = ?, phone = ?, image_url = ? WHERE id = ?");
+        ps.setString(1, consultant.getFirstName());
+        ps.setString(2, consultant.getLastName());
+        ps.setString(3, consultant.getEmail());
+        ps.setString(4, consultant.getSpeciality());
+        ps.setString(5, consultant.getDescription());
+        ps.setBigDecimal(6, consultant.getHourlyRate());
+        ps.setString(7, consultant.getPhone());
+        ps.setString(8, consultant.getImageUrl());
+        ps.setLong(9, id);
+        ps.execute();
+    }
 
     public User getConsultant(String email) throws SQLException, JsonProcessingException {
         PreparedStatement ps = Connect.SQLConnection("SELECT * FROM consultants WHERE email = ?");
@@ -57,7 +71,7 @@ public class ConsultantRepository {
             User consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
             return consultant;
         }else{
             throw new NoSuchUserException();
@@ -75,7 +89,7 @@ public class ConsultantRepository {
             Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
             return consultant;
         }else{
             throw new NoSuchUserException();
@@ -92,7 +106,7 @@ public class ConsultantRepository {
             Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
             consultantList.add(consultant);
         }
         return consultantList;
@@ -109,7 +123,7 @@ public class ConsultantRepository {
             Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
             consultantList.add(consultant);
         }
         return consultantList;
@@ -166,7 +180,7 @@ public class ConsultantRepository {
             Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
             consultantList.add(consultant);
         }
         return consultantList;
@@ -189,7 +203,7 @@ public class ConsultantRepository {
             Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
                     rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
                     rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                    rs.getString("description"), rs.getBigDecimal("hourly_rate"));
+                    rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
             consultantList.add(consultant);
         }
         return consultantList;

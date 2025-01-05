@@ -3,14 +3,14 @@ package com.OnlineConsultancyApp.controllers;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.models.Users.Client;
+import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.OnlineConsultancyApp.services.AppointmentService;
 import com.OnlineConsultancyApp.services.ClientService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 
@@ -18,4 +18,17 @@ import java.sql.SQLException;
 @RequestMapping("/client")
 public class ClientController {
 
+    @Autowired
+    ClientService clientService;
+
+    @PutMapping("/edit")
+    public ResponseEntity<String> editConsultant(@RequestHeader("Authorization") String token, @RequestBody Client client){
+        try{
+            clientService.editClient(token, client);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Problems.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

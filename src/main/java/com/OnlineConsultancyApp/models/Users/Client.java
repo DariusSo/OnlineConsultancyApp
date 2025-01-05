@@ -16,9 +16,11 @@ import java.util.List;
 public class Client extends User {
 
     private LocalDate birthDate;
+    private String imageUrl;
 
-    public Client(long id, String firstName, String lastName, String email, String phone, List<Long> appointmentsId, Roles role, LocalDate birthDate) {
+    public Client(long id, String firstName, String lastName, String email, String phone, List<Long> appointmentsId, Roles role, LocalDate birthDate, String imageUrl) {
         super(id, firstName, lastName, email, phone, appointmentsId, role);
         this.birthDate = birthDate;
+        this.imageUrl = imageUrl;
     }
 }

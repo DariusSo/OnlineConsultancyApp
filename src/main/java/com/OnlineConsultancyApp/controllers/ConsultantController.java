@@ -79,16 +79,7 @@ public class ConsultantController {
             return  new ResponseEntity<>("Json parse problems.", HttpStatus.BAD_REQUEST);
         }
     }
-//    @GetMapping("/search")
-//    public ResponseEntity<List<Consultant>> searchConsultants(double minPrice, double maxPrice, String speciality, Categories category, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-//        try {
-//            List<Consultant> consultantList = consultantService.getConsultantsWithFilters(minPrice, maxPrice, speciality, category, date);
-//            return new ResponseEntity<>(consultantList, HttpStatus.OK);
-//        } catch (SQLException | JsonProcessingException e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+
     @GetMapping("/search")
     @Cacheable("consultant_search")
     public List<Consultant> searchConsultants(double minPrice, double maxPrice, String speciality, Categories category, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
@@ -111,6 +102,17 @@ public class ConsultantController {
             return new ResponseEntity<>("Can't find consultant", HttpStatus.BAD_REQUEST);
         }
     }
+    @PutMapping("/edit")
+    public ResponseEntity<String> editConsultant(@RequestHeader("Authorization") String token, @RequestBody Consultant consultant){
+        try{
+            consultantService.editConsultant(consultant, token);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Problems.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 }

@@ -7,6 +7,7 @@ import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Users.Client;
 import com.OnlineConsultancyApp.models.Users.User;
 import com.OnlineConsultancyApp.repositories.ClientRepository;
+import com.OnlineConsultancyApp.security.JwtDecoder;
 import com.OnlineConsultancyApp.security.JwtGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.mindrot.jbcrypt.BCrypt;
@@ -45,5 +46,9 @@ public class ClientService {
 
     public Client getClientById(long id) throws SQLException, JsonProcessingException {
         return clientRepository.getClientById(id);
+    }
+    public void editClient(String token, Client client) throws SQLException {
+        long userId = JwtDecoder.decodedUserId(token);
+        clientRepository.editClient(client, userId);
     }
 }

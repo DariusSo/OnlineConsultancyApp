@@ -20,13 +20,15 @@ public class Consultant extends User {
     private String speciality;
     private String description;
     private BigDecimal hourlyRate;
+    private String imageUrl;
 
-    public Consultant(long id, String firstName, String lastName, String email, String phone, List<Long> appointmentsId, Roles role, String categories, String availableTime, String speciality, String description, BigDecimal hourlyRate) {
+    public Consultant(long id, String firstName, String lastName, String email, String phone, List<Long> appointmentsId, Roles role, String categories, String availableTime, String speciality, String description, BigDecimal hourlyRate, String imageUrl) {
         super(id, firstName, lastName, email, phone, appointmentsId, role);
         this.categories = categories;
         this.availableTime = availableTime;
         this.speciality = speciality;
         this.description = description;
         this.hourlyRate = hourlyRate;
+        this.imageUrl = imageUrl;
     }
 }
