@@ -12,12 +12,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.OnlineConsultancyApp.Utilities.*;
 
 @Repository
 public class ClientRepository {
@@ -25,78 +25,96 @@ public class ClientRepository {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void registerClient(Client client) throws SQLException {
-
-        PreparedStatement ps = Connect.SQLConnection("INSERT INTO clients (first_name, last_name, email, password, role, birth_date, phone)" +
-                "VALUES (?,?,?,?,?,?,?)");
-        ps.setString(1, client.getFirstName());
-        ps.setString(2, client.getLastName());
-        ps.setString(3, client.getEmail());
-        ps.setString(4, client.getPassword());
-        ps.setString(5, String.valueOf(client.getRole()));
-        ps.setString(6, String.valueOf(client.getBirthDate()));
-        ps.setString(7, client.getPhone());
-        ps.execute();
+        String sql = "INSERT INTO clients (first_name, last_name, email, password, role, birth_date, phone) VALUES (?,?,?,?,?,?,?)";
+        try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, client.getFirstName());
+            ps.setString(2, client.getLastName());
+            ps.setString(3, client.getEmail());
+            ps.setString(4, client.getPassword());
+            ps.setString(5, String.valueOf(client.getRole()));
+            ps.setString(6, String.valueOf(client.getBirthDate()));
+            ps.setString(7, client.getPhone());
+            ps.execute();
+        }
     }
 
     public void editClient(Client client, long id) throws SQLException {
-        PreparedStatement ps = Connect.SQLConnection("UPDATE clients SET first_name = ?, last_name = ?, email = ?, phone = ?, image_url = ? WHERE id = ?");
-        ps.setString(1, client.getFirstName());
-        ps.setString(2, client.getLastName());
-        ps.setString(3, client.getEmail());
-        ps.setString(4, client.getPhone());
-        ps.setString(5, client.getImageUrl());
-        ps.setLong(6, id);
-        ps.execute();
+        String sql = "UPDATE clients SET first_name = ?, last_name = ?, email = ?, phone = ?, image_url = ? WHERE id = ?";
+        try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, client.getFirstName());
+            ps.setString(2, client.getLastName());
+            ps.setString(3, client.getEmail());
+            ps.setString(4, client.getPhone());
+            ps.setString(5, client.getImageUrl());
+            ps.setLong(6, id);
+            ps.execute();
+        }
     }
 
     public Client getClientById(long id) throws SQLException, JsonProcessingException {
-        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM clients WHERE id = ?");
-
-        ps.setLong(1, id);
-        ResultSet rs = ps.executeQuery();
-
-        if(rs.next()){
-            List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {
-            });
-            Client client = new Client(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
-                    rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
-                    LocalDate.parse(rs.getString("birth_date")), rs.getString("image_url"));
-            return client;
-        }else{
-            throw new NoSuchUserException();
+        String sql = "SELECT * FROM clients WHERE id = ?";
+        try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
+                return new Client(rs.getLong("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        appointmentList,
+                        Roles.valueOf(rs.getString("role")),
+                        LocalDate.parse(rs.getString("birth_date")),
+                        rs.getString("image_url"));
+            }else{
+                throw new NoSuchUserException();
+            }
         }
     }
 
     public User getClientByEmail(String email) throws SQLException, JsonProcessingException {
-        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM clients WHERE email = ?");
-        ps.setString(1, email);
-        ResultSet rs = ps.executeQuery();
-
-        if(rs.next()){
-            List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
-            User client = new Client(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
-                    rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
-                    LocalDate.parse(rs.getString("birth_date")), rs.getString("image_url"));
-            return client;
-        }else{
-            throw new NoSuchUserException();
+        String sql = "SELECT * FROM clients WHERE email = ?";
+        try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
+                return new Client(rs.getLong("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        appointmentList,
+                        Roles.valueOf(rs.getString("role")),
+                        LocalDate.parse(rs.getString("birth_date")),
+                        rs.getString("image_url"));
+            }else{
+                throw new NoSuchUserException();
+            }
         }
     }
 
     public User getAuthUser(String email) throws SQLException {
-        PreparedStatement ps = Connect.SQLConnection("SELECT * FROM clients WHERE email = ?");
+        String sql = "SELECT * FROM clients WHERE email = ?";
+        try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
 
-        ps.setString(1, email);
-        ResultSet rs = ps.executeQuery();
-
-        if(rs.next()){
-            User client = new Client();
-            client.setId(rs.getLong("id"));
-            client.setEmail(rs.getString("email"));
-            client.setPassword(rs.getString("password"));
-            return client;
-        }else{
-            throw new BadEmailOrPasswordException();
+            if(rs.next()){
+                User client = new Client();
+                client.setId(rs.getLong("id"));
+                client.setEmail(rs.getString("email"));
+                client.setPassword(rs.getString("password"));
+                return client;
+            }else{
+                throw new BadEmailOrPasswordException();
+            }
         }
     }
 }
