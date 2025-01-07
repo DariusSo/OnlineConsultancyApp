@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.services;
 
+import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.models.Messages.ForumMessage;
 import com.OnlineConsultancyApp.repositories.ForumRepository;
@@ -15,17 +16,16 @@ public class ForumService {
 
     @Autowired
     ForumRepository forumRepository;
+    @Autowired
+    AuthService authService;
 
     public void createQuestion(ForumMessage forumMessage) throws SQLException {
         forumRepository.createQuestion(forumMessage);
     }
 
     public void setAnswer(String token, long id, String message) throws SQLException {
-        try{
-            JwtDecoder.decodedUserId(token);
-        } catch (Exception e){
-            throw new NoAccessException();
-        }
+        ForumMessage forumMessage = forumRepository.getMessageById(id);
+        authService.authenticate(token, forumMessage.getConsultantId());
         forumRepository.setAnswer(id, message);
     }
 

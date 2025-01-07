@@ -12,6 +12,10 @@ import java.util.Map;
 
 public class Utilities {
 
+    public static final String URL = "jdbc:mysql://localhost:3306/consultancy";
+    public static final String dbUser = System.getenv("DB_USER");
+    public static final String dbPassword = System.getenv("DB_PASSWORD");
+
     public static List<Map<String, String>> deserializeAvailableTime(String availableTime) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 

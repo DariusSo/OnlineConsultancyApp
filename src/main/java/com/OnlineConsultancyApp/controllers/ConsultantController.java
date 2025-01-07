@@ -113,6 +113,17 @@ public class ConsultantController {
         }
     }
 
-
-
+    @GetMapping("/id")
+    public ResponseEntity<Consultant> getConsultantById(long id){
+        try{
+            Consultant consultant = consultantService.getConsultantById(id);
+            return new ResponseEntity<>(consultant, HttpStatus.OK);
+        } catch (NoSuchUserException e) {
+            return new ResponseEntity<>(new Consultant(), HttpStatus.NOT_FOUND);
+        } catch (SQLException | JsonProcessingException e) {
+            return new ResponseEntity<>(new Consultant(), HttpStatus.BAD_GATEWAY);
+        } catch (MalformedJwtException e){
+            return new ResponseEntity<>(new Consultant(), HttpStatus.UNAUTHORIZED);
+        }
+    }
 }

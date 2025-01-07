@@ -35,10 +35,12 @@ public class StripeContoller {
             responseData.put("id", session.getId());
             return ResponseEntity.ok(responseData);
         } catch (StripeException | SQLException e) {
+            e.printStackTrace();
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

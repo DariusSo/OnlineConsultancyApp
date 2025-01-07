@@ -20,11 +20,12 @@ public class ForumController {
     ForumService forumService;
 
     @PostMapping
-    public ResponseEntity<String> createQuestion(ForumMessage forumMessage){
+    public ResponseEntity<String> createQuestion(@RequestBody ForumMessage forumMessage){
         try{
             forumService.createQuestion(forumMessage);
             return new ResponseEntity<>("Success", HttpStatus.OK);
         } catch (SQLException e) {
+            e.printStackTrace();
             return new ResponseEntity<>("Database problems", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

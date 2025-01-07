@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,6 +18,7 @@ public class ForumMessage {
     private String question;
     private String answer;
     private long consultantId;
+    LocalDateTime questionAsked;
 
 
 }

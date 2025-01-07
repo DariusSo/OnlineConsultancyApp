@@ -4,6 +4,7 @@ import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.enums.Roles;
 import com.OnlineConsultancyApp.models.Appointment;
+import com.OnlineConsultancyApp.models.Messages.ForumMessage;
 import com.OnlineConsultancyApp.models.Users.Client;
 import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.OnlineConsultancyApp.models.Users.User;
@@ -79,6 +80,13 @@ public class AuthService {
         if(role == Roles.CLIENT || role == Roles.CONSULTANT){
 
         }else{
+            throw new NoAccessException();
+        }
+    }
+    public void authenticate(String token, long consultantIdFromMessage){
+        long consultantId = JwtDecoder.decodedUserId(token);
+        Roles role = JwtDecoder.decodedRole(token);
+        if(consultantIdFromMessage != consultantId || role != Roles.CONSULTANT){
             throw new NoAccessException();
         }
     }

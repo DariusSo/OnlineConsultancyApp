@@ -24,7 +24,7 @@ public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 		Thread thread = new Thread(new CheckTimesLeftRunnable());
-		thread.start();
+		//thread.start();
 	}
 
 	@Bean
