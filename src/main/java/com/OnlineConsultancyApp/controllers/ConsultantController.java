@@ -110,6 +110,8 @@ public class ConsultantController {
         } catch (SQLException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Problems.", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IOException | ClassNotFoundException e) {
+            return new ResponseEntity<>("Redis problem.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

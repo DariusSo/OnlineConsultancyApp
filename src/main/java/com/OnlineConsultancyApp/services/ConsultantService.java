@@ -48,9 +48,25 @@ public class ConsultantService {
         }
     }
 
-    public void editConsultant(Consultant consultant, String token) throws SQLException {
+    public void editConsultant(Consultant consultant, String token) throws SQLException, IOException, ClassNotFoundException {
         long id = JwtDecoder.decodedUserId(token);
         consultantRepository.editConsultant(consultant, id);
+        dealWithRedisCache(id, consultant);
+    }
+
+    public void dealWithRedisCache(long id, Consultant consultant) throws IOException, ClassNotFoundException, SQLException {
+        List<Consultant> consultantList = redisCacheService.getNewConsultants();
+        int i = 0;
+        int j = -1;
+        for(Consultant c : consultantList){
+            if(c.getId() == id){
+                j = i;
+            }
+            i++;
+        }
+        if(j > -1){
+            redisCacheService.editConsultantInCache(consultant, j);
+        }
     }
 
     //Checking credentials and generating jwt token

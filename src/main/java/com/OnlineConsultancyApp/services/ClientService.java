@@ -47,6 +47,7 @@ public class ClientService {
     public Client getClientById(long id) throws SQLException, JsonProcessingException {
         return clientRepository.getClientById(id);
     }
+
     public void editClient(String token, Client client) throws SQLException {
         long userId = JwtDecoder.decodedUserId(token);
         clientRepository.editClient(client, userId);

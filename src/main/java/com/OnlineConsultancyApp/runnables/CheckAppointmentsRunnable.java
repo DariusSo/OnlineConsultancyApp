@@ -14,7 +14,7 @@ import static com.OnlineConsultancyApp.runnables.CheckTimesLeftRunnable.reentran
 
 public class CheckAppointmentsRunnable implements Runnable{
 
-    private CountDownLatch countDownLatch;
+    private final CountDownLatch countDownLatch;
 
     public CheckAppointmentsRunnable(CountDownLatch countDownLatch) {
         this.countDownLatch = countDownLatch;

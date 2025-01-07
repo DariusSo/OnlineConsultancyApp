@@ -21,7 +21,7 @@ import static com.OnlineConsultancyApp.runnables.CheckTimesLeftRunnable.*;
 public class ProccessTimeRunnable implements Runnable{
 
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     ConsultantService consultantService = new ConsultantService();
     private CountDownLatch countDownLatch;
 

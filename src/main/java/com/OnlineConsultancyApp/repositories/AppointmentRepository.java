@@ -23,7 +23,7 @@ public class AppointmentRepository {
         String sql = "INSERT INTO appointments (title, description, category, user_id, consultant_id, time_and_date, price, " +
                 "is_accepted, uuid, is_paid, room_uuid) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
         try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
-            PreparedStatement ps = connection.prepareStatement(sql)) {
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, appointment.getTitle());
             ps.setString(2, appointment.getDescription());
             ps.setString(3, String.valueOf(appointment.getCategory()));
@@ -48,7 +48,7 @@ public class AppointmentRepository {
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Appointment appointment = new Appointment(
                         rs.getLong("id"),
                         rs.getString("uuid"),
@@ -78,7 +78,7 @@ public class AppointmentRepository {
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, String.valueOf(uuid));
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return new Appointment(
                         rs.getLong("id"),
                         rs.getString("uuid"),
@@ -92,7 +92,7 @@ public class AppointmentRepository {
                         rs.getBoolean("is_accepted"),
                         rs.getBoolean("is_paid"),
                         UUID.fromString(rs.getString("room_uuid")));
-            }else{
+            } else {
                 throw new NoSuchAppointmentException();
             }
         }
@@ -101,13 +101,13 @@ public class AppointmentRepository {
     public List<Appointment> getAppointmentsByConsultantId(long id) throws SQLException {
         List<Appointment> appointmentList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        String sql = "SELECT * FROM appointments WHERE consultant_id = ?";
 
+        String sql = "SELECT * FROM appointments WHERE consultant_id = ?";
         try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Appointment appointment = new Appointment(
                         rs.getLong("id"),
                         rs.getString("uuid"),
@@ -129,12 +129,13 @@ public class AppointmentRepository {
 
     public Appointment getAppointmentsByAppointmenttId(long id) throws SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
         String sql = "SELECT * FROM appointments WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return new Appointment(
                         rs.getLong("id"),
                         rs.getString("uuid"),
@@ -148,7 +149,7 @@ public class AppointmentRepository {
                         rs.getBoolean("is_accepted"),
                         rs.getBoolean("is_paid"),
                         UUID.fromString(rs.getString("room_uuid")));
-            }else{
+            } else {
                 throw new NoSuchAppointmentException();
             }
         }
@@ -162,9 +163,9 @@ public class AppointmentRepository {
             ps.setLong(2, consultantId);
 
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getLong("id");
-            }else{
+            } else {
                 throw new NoSuchAppointmentException();
             }
         }
@@ -189,6 +190,7 @@ public class AppointmentRepository {
             ps.execute();
         }
     }
+
     public void deleteAppointment(long id) throws SQLException {
         String sql = "DELETE FROM appointments WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
@@ -214,7 +216,7 @@ public class AppointmentRepository {
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 return rs.getString("stripe_session_id");
             }
             return "";
