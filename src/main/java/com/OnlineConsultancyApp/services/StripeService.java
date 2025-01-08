@@ -51,6 +51,7 @@ public class StripeService {
     //Payment with appointment creation
     public Session createCheckoutSession(Appointment appointment, String token) throws Exception {
         UUID uuid = UUID.randomUUID();
+        authService.authenticateClientRole(token);
 
         Stripe.apiKey = System.getenv("STRIPE_API");
 

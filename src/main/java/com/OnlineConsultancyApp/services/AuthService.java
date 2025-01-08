@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.services;
 
+import com.OnlineConsultancyApp.exceptions.BadRolesException;
 import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.exceptions.ThereIsNoSuchRoleException;
 import com.OnlineConsultancyApp.enums.Roles;
@@ -88,6 +89,13 @@ public class AuthService {
         Roles role = JwtDecoder.decodedRole(token);
         if(consultantIdFromMessage != consultantId || role != Roles.CONSULTANT){
             throw new NoAccessException();
+        }
+    }
+
+    public void authenticateClientRole(String token){
+        Roles role = JwtDecoder.decodedRole(token);
+        if(role == Roles.CONSULTANT){
+            throw new BadRolesException();
         }
     }
 }

@@ -34,8 +34,8 @@ public class RedisCacheService {
     public void editConsultantInCache(Consultant consultant, long id) throws IOException, ClassNotFoundException {
         try (Jedis jedis = jedisPool.getResource()) {
             String consultantString = jedis.lindex("newConsultants", id);
-            jedis.lrem("newConsultants", id, consultantString);
             jedis.lpush("newConsultants", serializeToString(consultant));
+            jedis.lrem("newConsultants", id, consultantString);
         }
     }
 

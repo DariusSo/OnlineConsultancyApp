@@ -37,6 +37,7 @@ public class AppointmentService {
 
     public void createAppointment(Appointment appointment, String token) throws Exception {
         long userId = JwtDecoder.decodedUserId(token);
+
         //Get participants
         Client client = clientService.getClientById(userId);
         Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());

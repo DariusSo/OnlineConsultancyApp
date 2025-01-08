@@ -38,7 +38,7 @@ public class CheckTimesLeftRunnable implements Runnable {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            CountDownLatch countDownLatch = new CountDownLatch(4);
+            CountDownLatch countDownLatch = new CountDownLatch(8);
 
             Thread thread1 = new Thread(new ProccessTimeRunnable(countDownLatch));
             Thread thread2 = new Thread(new ProccessTimeRunnable(countDownLatch));

@@ -20,17 +20,15 @@ public class JwtGenerator {
 
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
-        Date exp = new Date(nowMillis + 1120 * 60 * 1000); // 120 minutes
 
         String jwt = Jwts.builder()
-                .setIssuer("manokompanija.eu")
-                .setSubject("manokompanija.eu")
+                .setIssuer("AdvisorFlow")
+                .setSubject("USER")
                 .claim("UserId", userId)
                 .claim("Role", role)
                 .claim("DateOfLogin", new java.text.SimpleDateFormat("yyyy-MM-dd").format(now))
                 .setId(UUID.randomUUID().toString())
                 .setIssuedAt(now)
-                .setExpiration(exp)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 

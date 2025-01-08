@@ -1,6 +1,7 @@
 package com.OnlineConsultancyApp.controllers;
 
 
+import com.OnlineConsultancyApp.exceptions.BadRolesException;
 import com.OnlineConsultancyApp.exceptions.NoAccessException;
 import com.OnlineConsultancyApp.exceptions.TooLateException;
 import com.OnlineConsultancyApp.models.Appointment;
@@ -39,7 +40,10 @@ public class StripeContoller {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
-        } catch (Exception e) {
+        } catch (BadRolesException e){
+            return ResponseEntity.status(403).body(new HashMap<>());
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
