@@ -66,7 +66,7 @@ public class StripeContoller {
     @GetMapping("/redirect")
     public RedirectView redirect(@RequestParam UUID uuid){
         return (stripeService.setAppointmentPaymentStatusTrue(uuid)) ?
-                new RedirectView("http://localhost:5173/thanks") : // status update successful
-                new RedirectView("http://localhost:5173/error"); // status update failed
+                new RedirectView("http://advisorflow.dariussongaila.dev/thanks") : // status update successful
+                new RedirectView("http://advisorflow.dariussongaila.dev/error"); // status update failed
     }
 }

@@ -14,6 +14,7 @@ import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,6 +30,8 @@ public class StripeService {
     ConsultantService consultantService;
     @Autowired
     AuthService authService;
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
 
 //    @Value("${stripe.api.key}")
 //    private String stripeApiKey;
@@ -53,7 +56,7 @@ public class StripeService {
         UUID uuid = UUID.randomUUID();
         authService.authenticateClientRole(token);
 
-        Stripe.apiKey = System.getenv("STRIPE_API");
+        Stripe.apiKey = stripeApiKey;
 
         //Set price, because it can come different from front end
         Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
@@ -72,8 +75,8 @@ public class StripeService {
         //Stripe session params
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl("http://localhost:8080/redirect?uuid=" + uuid)
-                .setCancelUrl("http://localhost:5173/error")
+                .setSuccessUrl("http://api.advisorflow.dariussongaila.dev/redirect?uuid=" + uuid)
+                .setCancelUrl("http://advisorflow.dariussongaila.dev/error")
                 .addLineItem(SessionCreateParams.LineItem.builder()
                         .setQuantity(1L)
                         .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
@@ -95,7 +98,7 @@ public class StripeService {
 
     public void createRefund(String token, long appointmentId) throws SQLException, StripeException, JsonProcessingException {
         authService.authenticateRole(token);
-        Stripe.apiKey = System.getenv("STRIPE_API");
+        Stripe.apiKey = stripeApiKey;
 
         //Getting data
         String sessionId = appointmentService.getStripeSessionId(appointmentId);

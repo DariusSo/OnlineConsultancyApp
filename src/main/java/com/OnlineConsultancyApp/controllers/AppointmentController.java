@@ -45,6 +45,7 @@ public class AppointmentController {
             List<Appointment> appointmentList = appointmentService.findAppointments(jwtToken);
             return new ResponseEntity<>(appointmentList, HttpStatus.OK);
         } catch (SQLException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_GATEWAY);
         } catch (ThereIsNoSuchRoleException e){
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);

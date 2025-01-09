@@ -10,6 +10,7 @@ import com.OnlineConsultancyApp.models.Users.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -17,10 +18,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.OnlineConsultancyApp.Utilities.*;
-
 @Repository
 public class ClientRepository {
+
+    @Value("${db.url}")
+    private String URL;
+
+    @Value("${db.username}")
+    private String dbUser;
+
+    @Value("${db.password}")
+    private String dbPassword;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

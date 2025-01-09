@@ -27,7 +27,8 @@ import java.util.*;
 @Service
 public class AppointmentService {
 
-    AppointmentRepository appointmentRepository = new AppointmentRepository();
+    @Autowired
+    AppointmentRepository appointmentRepository;
     @Autowired
     ConsultantService consultantService;
     @Autowired
@@ -201,6 +202,10 @@ public class AppointmentService {
         } else{
             throw new NoAccessException();
         }
+    }
+
+    public List<Appointment> getAppointmentList() throws SQLException {
+        return appointmentRepository.getAppointmentsList();
     }
 
     public boolean connectToAppointment(UUID roomUuid) throws SQLException {

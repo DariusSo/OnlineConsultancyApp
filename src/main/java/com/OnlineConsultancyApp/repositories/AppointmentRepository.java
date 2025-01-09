@@ -5,6 +5,7 @@ import com.OnlineConsultancyApp.exceptions.NoSuchAppointmentException;
 import com.OnlineConsultancyApp.config.Connect;
 import com.OnlineConsultancyApp.enums.Categories;
 import com.OnlineConsultancyApp.models.Appointment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -14,10 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.OnlineConsultancyApp.Utilities.*;
-
 @Repository
 public class AppointmentRepository {
+
+    @Value("${db.url}")
+    private String URL;
+
+    @Value("${db.username}")
+    private String dbUser;
+
+    @Value("${db.password}")
+    private String dbPassword;
 
     public void addAppointment(Appointment appointment) throws SQLException {
         String sql = "INSERT INTO appointments (title, description, category, user_id, consultant_id, time_and_date, price, " +
@@ -221,6 +229,24 @@ public class AppointmentRepository {
             }
             return "";
         }
+    }
+
+    public List<Appointment> getAppointmentsList() throws SQLException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        List<Appointment> appointmentList = new ArrayList<>();
+        String sql = "SELECT * FROM appointments";
+        try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Appointment appointment = new Appointment(rs.getLong("id"), rs.getString("uuid"), rs.getString("title"), rs.getString("description"),
+                        Categories.valueOf(rs.getString("category")), rs.getLong("user_id"), rs.getLong("consultant_id"),
+                        LocalDateTime.parse(rs.getString("time_and_date"), formatter), rs.getBigDecimal("price"),
+                        rs.getBoolean("is_accepted"), rs.getBoolean("is_paid"), UUID.fromString(rs.getString("room_uuid")));
+                appointmentList.add(appointment);
+            }
+        }
+        return appointmentList;
     }
 
 }

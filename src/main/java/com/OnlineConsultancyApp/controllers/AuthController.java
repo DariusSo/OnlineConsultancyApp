@@ -39,6 +39,7 @@ public class AuthController {
         } catch (UserAlreadyExistsException e){
             return new ResponseEntity<>("User with this email already exists.", HttpStatus.BAD_REQUEST);
         } catch (SQLException e) {
+            e.printStackTrace();
             return new ResponseEntity<>("Problems with database.", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>("Converting appointments", HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,5 +1,6 @@
 package com.OnlineConsultancyApp.repositories;
 
+import com.OnlineConsultancyApp.Utilities;
 import com.OnlineConsultancyApp.exceptions.BadEmailOrPasswordException;
 import com.OnlineConsultancyApp.exceptions.NoSuchUserException;
 import com.OnlineConsultancyApp.config.Connect;
@@ -11,20 +12,30 @@ import com.OnlineConsultancyApp.models.Users.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.OnlineConsultancyApp.Utilities.*;
-
 @Service
 public class ConsultantRepository {
+
+    @Value("${db.url}")
+    private String URL;
+
+    @Value("${db.username}")
+    private String dbUser;
+
+    @Value("${db.password}")
+    private String dbPassword;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public long registerConsultant(Consultant consultant) throws SQLException, JsonProcessingException {
+        System.out.println(URL);
         String sql = "INSERT INTO consultants (first_name, last_name, email, password, role, categories, available_time, " +
                      "speciality, description, hourly_rate, phone) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
         try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
@@ -284,6 +295,26 @@ public class ConsultantRepository {
             }
             return consultantList;
         }
+    }
+    public List<Consultant> getConsultantList() throws SQLException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Consultant> consultantList = new ArrayList<>();
+        String sql = "SELECT * FROM consultants";
+        System.out.println(dbUser + " " + dbPassword);
+        try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
+                Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
+                        rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
+                        rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
+                        rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
+                System.out.println(consultant.getId());
+                consultantList.add(consultant);
+            }
+        }
+        return consultantList;
     }
 
 }

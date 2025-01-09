@@ -27,7 +27,8 @@ import java.util.Map;
 @Service
 public class ConsultantService {
 
-    ConsultantRepository consultantRepository = new ConsultantRepository();
+    @Autowired
+    ConsultantRepository consultantRepository;
 
     @Autowired
     RedisCacheService redisCacheService;
@@ -99,10 +100,6 @@ public class ConsultantService {
         consultantRepository.updateDates(dates, userId);
 
     }
-    //For updating from other services
-    public void updateAvailableTime(String availableTime, long userId) throws SQLException, JsonProcessingException {
-        consultantRepository.updateDates(availableTime, userId);
-    }
     //Search method
     public List<Consultant> getConsultantsWithFilters(double minPrice, double maxPrice, String speciality, Categories category, LocalDate date) throws SQLException, JsonProcessingException {
         List<Consultant> consultantList = new ArrayList<>();
@@ -146,6 +143,13 @@ public class ConsultantService {
 
     public String getDates(long id) throws SQLException {
         return consultantRepository.getDates(id);
+    }
+    //For updating from other services
+    public void updateAvailableTime(String availableTime, long userId) throws SQLException, JsonProcessingException {
+        consultantRepository.updateDates(availableTime, userId);
+    }
+    public List<Consultant> getConsultantList() throws SQLException {
+        return consultantRepository.getConsultantList();
     }
 
 }

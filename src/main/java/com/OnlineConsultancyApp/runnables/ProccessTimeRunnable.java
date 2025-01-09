@@ -5,6 +5,7 @@ import com.OnlineConsultancyApp.services.ConsultantService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -20,18 +21,10 @@ import static com.OnlineConsultancyApp.runnables.CheckTimesLeftRunnable.*;
 @Service
 public class ProccessTimeRunnable implements Runnable{
 
+    @Autowired
+    ConsultantService consultantService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    ConsultantService consultantService = new ConsultantService();
-    private CountDownLatch countDownLatch;
-
-
-    public ProccessTimeRunnable(CountDownLatch countDownLatch) {
-        this.countDownLatch = countDownLatch;
-    }
-
-    public ProccessTimeRunnable() {
-    }
 
     @Override
     public void run() {
@@ -61,7 +54,7 @@ public class ProccessTimeRunnable implements Runnable{
                     }
                     String updatedDateTimeString = objectMapper.writeValueAsString(updatedList);
                     consultantService.updateAvailableTime(updatedDateTimeString, consultant.getId());
-                    System.out.println(Thread.currentThread().getName() + "  " + consultant.getId());
+                    System.out.println(Thread.currentThread().getName() + " Consultant: " + consultant.getId());
 
                 } catch (JsonProcessingException | SQLException e) {
                     throw new RuntimeException(e);
@@ -69,7 +62,6 @@ public class ProccessTimeRunnable implements Runnable{
 
             }
         }
-        countDownLatch.countDown();
 
     }
 }

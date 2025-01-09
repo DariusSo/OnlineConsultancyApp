@@ -2,6 +2,7 @@ package com.OnlineConsultancyApp.repositories;
 
 import com.OnlineConsultancyApp.config.Connect;
 import com.OnlineConsultancyApp.models.Messages.ForumMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -10,10 +11,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.OnlineConsultancyApp.Utilities.*;
-
 @Repository
 public class ForumRepository {
+
+    @Value("${db.url}")
+    private String URL;
+
+    @Value("${db.username}")
+    private String dbUser;
+
+    @Value("${db.password}")
+    private String dbPassword;
 
     public void createQuestion(ForumMessage forumMessage) throws SQLException {
         LocalDateTime now = LocalDateTime.now();

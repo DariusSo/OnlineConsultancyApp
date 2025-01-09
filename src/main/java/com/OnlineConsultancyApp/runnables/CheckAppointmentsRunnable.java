@@ -3,6 +3,8 @@ package com.OnlineConsultancyApp.runnables;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.services.AppointmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.time.Duration;
@@ -12,13 +14,8 @@ import java.util.concurrent.CountDownLatch;
 import static com.OnlineConsultancyApp.runnables.CheckTimesLeftRunnable.*;
 import static com.OnlineConsultancyApp.runnables.CheckTimesLeftRunnable.reentrantLock;
 
+@Service
 public class CheckAppointmentsRunnable implements Runnable{
-
-    private final CountDownLatch countDownLatch;
-
-    public CheckAppointmentsRunnable(CountDownLatch countDownLatch) {
-        this.countDownLatch = countDownLatch;
-    }
 
     @Override
     public void run() {
@@ -36,13 +33,12 @@ public class CheckAppointmentsRunnable implements Runnable{
                     if (minutes > 120) {
                         appointmentService.deleteAppointment(appointment.getId());
                     }
-                    System.out.println(Thread.currentThread().getName() + "  " + appointment.getId());
+                    System.out.println(Thread.currentThread().getName() + " Appointment: " + appointment.getId());
 
                 } catch (JsonProcessingException | SQLException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-        countDownLatch.countDown();
     }
 }
