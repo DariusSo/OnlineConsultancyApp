@@ -3,6 +3,7 @@ package com.OnlineConsultancyApp.runnables;
 import com.OnlineConsultancyApp.models.Appointment;
 import com.OnlineConsultancyApp.services.AppointmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,11 @@ import static com.OnlineConsultancyApp.runnables.CheckTimesLeftRunnable.reentran
 @Service
 public class CheckAppointmentsRunnable implements Runnable{
 
+    @Autowired
+    AppointmentService appointmentService;
+
     @Override
     public void run() {
-        AppointmentService appointmentService = new AppointmentService();
         for(Appointment appointment : appointmentList){
             reentrantLock.lock();
             if(processedAppointmentsIds.contains(appointment.getId())){

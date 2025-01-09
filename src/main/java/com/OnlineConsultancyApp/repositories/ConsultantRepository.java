@@ -300,7 +300,6 @@ public class ConsultantRepository {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Consultant> consultantList = new ArrayList<>();
         String sql = "SELECT * FROM consultants";
-        System.out.println(dbUser + " " + dbPassword);
         try (Connection connection = DriverManager.getConnection(URL, dbUser, dbPassword);
              PreparedStatement ps = connection.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
