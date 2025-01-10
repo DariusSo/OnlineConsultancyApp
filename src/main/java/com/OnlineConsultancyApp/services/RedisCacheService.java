@@ -3,9 +3,11 @@ package com.OnlineConsultancyApp.services;
 import com.OnlineConsultancyApp.models.Users.Consultant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.IOException;
 import java.util.*;
@@ -16,10 +18,14 @@ public class RedisCacheService {
     private final JedisPool jedisPool;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RedisCacheService() {
-        String host = "localhost";
-        int port = 6379;
-        this.jedisPool = new JedisPool(host, port);
+    public RedisCacheService(
+            @Value("${spring.redis.host}") String host,
+            @Value("${spring.redis.port}") int port,
+            @Value("${spring.redis.password}") String password
+    ) {
+
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        this.jedisPool = new JedisPool(poolConfig, host, port, 2000, password);
     }
 
     public void put(Consultant consultant) throws IOException, ClassNotFoundException {

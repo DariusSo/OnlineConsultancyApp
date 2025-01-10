@@ -70,9 +70,6 @@ public class CheckTimesLeftRunnable implements Runnable {
             thread7.start();
             thread8.start();
 
-            System.out.println("List completed.");
-            System.out.println(processedConsultantsIds.size());
-            System.out.println(processedAppointmentsIds.size());
             try {
                 Thread.sleep(3600 * 1000);
             } catch (InterruptedException e) {

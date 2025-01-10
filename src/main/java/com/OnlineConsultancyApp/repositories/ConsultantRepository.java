@@ -305,11 +305,19 @@ public class ConsultantRepository {
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
                 List<Long> appointmentList = objectMapper.convertValue(rs.getString("appointments_ids"), new TypeReference<List<Long>>() {});
-                Consultant consultant = new Consultant(rs.getLong("id"), rs.getString("first_name"), rs.getString("last_name"),
-                        rs.getString("email"), rs.getString("phone"), appointmentList, Roles.valueOf(rs.getString("role")),
-                        rs.getString("categories"), rs.getString("available_time"), rs.getString("speciality"),
-                        rs.getString("description"), rs.getBigDecimal("hourly_rate"), rs.getString("image_url"));
-                System.out.println(consultant.getId());
+                Consultant consultant = new Consultant(rs.getLong("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        appointmentList,
+                        Roles.valueOf(rs.getString("role")),
+                        rs.getString("categories"),
+                        rs.getString("available_time"),
+                        rs.getString("speciality"),
+                        rs.getString("description"),
+                        rs.getBigDecimal("hourly_rate"),
+                        rs.getString("image_url"));
                 consultantList.add(consultant);
             }
         }

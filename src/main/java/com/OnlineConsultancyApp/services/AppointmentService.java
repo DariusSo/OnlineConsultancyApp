@@ -44,7 +44,7 @@ public class AppointmentService {
         Consultant consultant = consultantService.getConsultantById(appointment.getConsultantId());
 
         //Set room uuid and save appointment to db
-        addAppointment(appointment, token, userId);
+        addAppointment(appointment, userId);
 
         //Remove available time from consultant
         updateAvailableTimes(consultant.getAvailableTime(), appointment.getTimeAndDate(), consultant.getId());
@@ -56,7 +56,7 @@ public class AppointmentService {
         //Confirmation emails
         createAndSendEmail(consultant, client);
     }
-    public void addAppointment(Appointment appointment, String token, long userId) throws SQLException {
+    public void addAppointment(Appointment appointment, long userId) throws SQLException {
         UUID roomUuid = UUID.randomUUID();
 
         appointment.setUserId(userId);
