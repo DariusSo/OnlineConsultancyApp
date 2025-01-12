@@ -112,8 +112,10 @@ Ensure the following software is installed on your local machine:
 
 5. **Backend Setup**
     - Fill everything in application.properties
+  
     ![Navbar](./imgread/properties.PNG)
-   - Build and run the backend application:
+    
+    - Build and run the backend application:
 
 6. **Frontend Setup**
    - Navigate to the frontend directory and install dependencies:
@@ -255,7 +257,9 @@ Ensure the following are installed on your server:
 
 6. **Backend Setup**
    - Fill everything in application.properties
+  
     ![Navbar](./imgread/properties.PNG)
+    
    - Install **Supervisor**:
      ```bash
      sudo apt install supervisor -y
