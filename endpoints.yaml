@@ -1,0 +1,971 @@
+openapi: 3.0.0
+info:
+  title: AdvisorFlow API
+  description: API for interacting with an AI consultant and managing appointments.
+  version: 1.0.0
+paths:
+  /ai:
+    get:
+      tags:
+        - AI Chat Controller
+      summary: Ask AI Consultant
+      description: Allows the user to ask a question to an AI consultant in a specific category.
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer token for authorization
+          required: true
+          schema:
+            type: string
+        - name: message
+          in: query
+          description: The message or question to ask the AI consultant.
+          required: true
+          schema:
+            type: string
+        - name: consultantCategory
+          in: query
+          description: The category of the AI consultant.
+          required: true
+          schema:
+            type: string
+            enum:
+              - CATEGORY
+      responses:
+        '200':
+          description: Successful response containing the AI consultant's answer.
+          content:
+            application/json:
+              schema:
+                type: string
+  /appointments:
+    post:
+      tags:
+        - Appointments Controller
+      summary: Create Appointment
+      description: Creates a new appointment in the system.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Appointment.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Appointment created.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Errors in database.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: You need to login.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Unknown error.
+          content:
+            text/plain:
+              schema:
+                type: string
+    put:
+      tags:
+        - Appointments Controller
+      summary: Confirm Appointment
+      description: Confirms an appointment by its ID.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+        - name: appointmentId
+          in: query
+          description: The ID of the appointment to confirm.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Appointment confirmed.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '502':
+          description: Database problems.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: No access.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /appointments/info:
+    get:
+      tags:
+        - Appointments Controller
+      summary: Get User Information
+      description: Retrieves user information based on the provided JWT token and appointment ID.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+        - name: appointmentId
+          in: query
+          description: The ID of the appointment to fetch the user information for.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved user information.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: User object.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Empty Client object.
+        '401':
+          description: No access.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Empty Client object.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Empty Client object.
+  /appointments/connect:
+    get:
+      tags:
+        - Appointments Controller
+      summary: Check if time is right to connect to appointment
+      description: Checks time.
+      parameters:
+        - name: roomUuid
+          in: query
+          description: The UUID of the room to connect to.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully connected to the appointment.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '500':
+          description: Internal server error due to database issues.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /auth/client:
+    post:
+      tags:
+        - Auth Controller
+      summary: Register a Client
+      description: Register a new client in the system.
+      requestBody:
+        description: Client details for registration.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Registration successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: User with this email already exists.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Problems with database or JSON conversion.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /auth/login/client:
+    post:
+      tags:
+        - Auth Controller
+      summary: Client Login
+      description: Authenticate a client and return a JWT token.
+      requestBody:
+        description: Client login credentials.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: JWT token.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Bad email or password.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '502':
+          description: Problems with database.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad parameters or unexpected error.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /auth/login/consultant:
+    post:
+      tags:
+        - Auth Controller
+      summary: Consultant Login
+      description: Authenticate a consultant and return a JWT token.
+      requestBody:
+        description: Consultant login credentials.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: JWT token.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Bad email or password.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '502':
+          description: Problems with database.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Bad parameters or unexpected error.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /auth/consultant:
+    post:
+      tags:
+        - Auth Controller
+      summary: Register a Consultant
+      description: Register a new consultant.
+      requestBody:
+        description: Consultant details for registration.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Registration successful.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: User with this email already exists.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '502':
+          description: Problems with database.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /auth/profile:
+    get:
+      tags:
+        - Auth Controller
+      summary: Get Profile Information
+      description: Retrieve logged user's profile information using a JWT token.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved profile information.
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: No such role exists.
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: No JWT token.
+          content:
+            application/json:
+              schema:
+                type: object
+  /auth/consultationRoom:
+    get:
+      tags:
+        - Auth Controller
+      summary: Authenticate Consultation Room
+      description: Verify access to a consultation room using a JWT token and room UUID.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+        - name: roomUuid
+          in: query
+          description: UUID of the consultation room.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Database problems or unknown error.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized access.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Invalid role.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /websocket/consultation/{roomUuid}:
+    post:
+      tags:
+        - Chat Controller
+      summary: Send Chat Message
+      description: Sends a chat message to a specific consultation room.
+      parameters:
+        - name: roomUuid
+          in: path
+          description: Unique identifier of the consultation room.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Chat message to send.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sender:
+                  type: string
+                  description: Name or ID of the sender.
+                content:
+                  type: string
+                  description: The chat message content.
+      responses:
+        '200':
+          description: Chat message sent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sender:
+                    type: string
+                  content:
+                    type: string
+  /websocket/signal/{sessionId}:
+    post:
+      tags:
+        - Chat Controller
+      summary: Handle Signal Message
+      description: Sends a signaling message to a specific session to exchange answers/offers for video chat.
+      parameters:
+        - name: sessionId
+          in: path
+          description: Unique identifier of the session.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Signaling message to send.
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Signaling message sent successfully.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /client/edit:
+    put:
+      tags:
+        - Client Controller
+      summary: Edit Client
+      description: Edit a client's information.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Client details to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The client's unique identifier.
+                name:
+                  type: string
+                  description: The client's name.
+                email:
+                  type: string
+                  description: The client's email address.
+                phone:
+                  type: string
+                  description: The client's phone number.
+      responses:
+        '200':
+          description: Client information successfully updated.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Internal server error due to database issues.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /consultant/newest:
+    get:
+      tags:
+        - Consultant Controller
+      summary: Get Newest Consultants
+      description: Retrieves a list of the newest consultants.
+      responses:
+        '200':
+          description: Successfully retrieved the list of newest consultants.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /consultant/category:
+    get:
+      tags:
+        - Consultant Controller
+      summary: Get Consultants by Category
+      description: Retrieves consultants filtered by category.
+      parameters:
+        - name: category
+          in: query
+          description: The category to filter consultants by.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved consultants by category.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /consultant:
+    get:
+      tags:
+        - Consultant
+      summary: Get Consultant by Id
+      description: Retrieves a consultant's details using their JWT token.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved consultant details.
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Consultant not found.
+        '502':
+          description: Gateway error due to database issues.
+        '401':
+          description: Unauthorized access.
+  /consultant/dates:
+    put:
+      tags:
+        - Consultant Controller
+      summary: Update Available Dates
+      description: Updates a consultant's available dates.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: List of dates to update.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+      responses:
+        '200':
+          description: Updated!
+        '502':
+          description: Database problems.
+        '400':
+          description: Json parse problems.
+  /consultant/search:
+    get:
+      tags:
+        - Consultant
+      summary: Search Consultants
+      description: Search for consultants using filters like price, specialty, category and date.
+      parameters:
+        - name: minPrice
+          in: query
+          description: Minimum price.
+          required: false
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          description: Maximum price.
+          required: false
+          schema:
+            type: number
+        - name: speciality
+          in: query
+          description: Specialty of the consultant.
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Category of the consultant.
+          required: false
+          schema:
+            type: string
+        - name: date
+          in: query
+          description: Date for availability.
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Successfully retrieved consultants.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /consultant/id:
+    get:
+      tags:
+        - Consultant
+      summary: Get Consultant by ID
+      description: Retrieve consultant details using their ID.
+      parameters:
+        - name: id
+          in: query
+          description: The ID of the consultant.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved consultant details.
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Consultant not found.
+        '502':
+          description: Gateway error due to database issues.
+        '401':
+          description: Unauthorized access.
+  /consultant/edit:
+    put:
+      tags:
+        - Consultant
+      summary: Edit Consultant Details
+      description: Updates consultant details.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Consultant details to update.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Successfully updated consultant details.
+        '500':
+          description: Internal server error due to database or Redis issues.
+  /forum:
+    post:
+      tags:
+        - Forum Controller
+      summary: Create Forum Question
+      description: Allows a user to create a new forum question.
+      requestBody:
+        description: Forum question details.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consultantId:
+                  type: integer
+                  description: The ID of the consultant associated with the forum question.
+                message:
+                  type: string
+                  description: The forum question content.
+      responses:
+        '200':
+          description: Forum question created successfully.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Database problems.
+          content:
+            text/plain:
+              schema:
+                type: string
+    put:
+      tags:
+        - Forum Controller
+      summary: Set Forum Answer
+      description: Allows consultant to set an answer to a forum question.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: query
+          description: The ID of the forum message to answer.
+          required: true
+          schema:
+            type: integer
+        - name: message
+          in: query
+          description: The content of the answer.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully set the answer.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized access.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Database problems occurred.
+          content:
+            text/plain:
+              schema:
+                type: string
+    get:
+      tags:
+        - Forum Controller
+      summary: Get Forum Messages
+      description: Retrieves forum messages for a specific consultant.
+      parameters:
+        - name: consultantId
+          in: query
+          description: The ID of the consultant whose forum messages should be retrieved.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully retrieved forum messages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    messageId:
+                      type: integer
+                      description: The ID of the forum message.
+                    consultantId:
+                      type: integer
+                      description: The ID of the consultant.
+                    message:
+                      type: string
+                      description: The forum message content.
+        '500':
+          description: Database problems occurred.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /create-checkout-session:
+    post:
+      tags:
+        - Stripe Controller
+      summary: Create Checkout Session
+      description: Creates a Stripe checkout session and appointment.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Appointment details to create a checkout session.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: Appointment ID.
+                date:
+                  type: string
+                  format: date-time
+                  description: Appointment date and time.
+                price:
+                  type: number
+                  description: Appointment price.
+                description:
+                  type: string
+                  description: Description of the appointment.
+      responses:
+        '200':
+          description: Successfully created checkout session.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Stripe session ID.
+        '400':
+          description: Stripe or database error occurred.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+        '403':
+          description: Forbidden due to bad roles.
+  /refund:
+    delete:
+      tags:
+        - Stripe Controller
+      summary: Refund and Cancel Appointment
+      description: Creates a refund and cancels the specified appointment.
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT token for authorization.
+          required: true
+          schema:
+            type: string
+        - name: appointmentId
+          in: query
+          description: The ID of the appointment to refund and cancel.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Appointment canceled successfully.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized access.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '418':
+          description: Cancellation request too late.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Stripe or database error.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /redirect:
+    get:
+      tags:
+        - Stripe Controller
+      summary: Redirect After Payment
+      description: Redirects the user based on the payment status update result.
+      parameters:
+        - name: uuid
+          in: query
+          description: The UUID of the appointment to update the payment status.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '302':
+          description: Redirects to the success or error page based on the status update result.
