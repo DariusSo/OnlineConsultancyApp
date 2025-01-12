@@ -25,27 +25,13 @@ public class AppointmentController {
     @Autowired
     AppointmentService appointmentService;
 
-    @PostMapping
-    public ResponseEntity<String> createAppointment(@RequestBody Appointment appointment,
-                                                    @RequestHeader("Authorization") String jwtToken){
-        try{
-            appointmentService.createAppointment(appointment, jwtToken);
-            return new ResponseEntity<>("Appointment created", HttpStatus.OK);
-        }catch (SQLException e){
-            return new ResponseEntity<>("Errors in database", HttpStatus.BAD_REQUEST);
-        } catch (MalformedJwtException e){
-            return new ResponseEntity<>("You need to login", HttpStatus.UNAUTHORIZED);
-        } catch (Exception e){
-            return new ResponseEntity<>("Unknown error", HttpStatus.BAD_REQUEST);
-        }
-    }
+
     @GetMapping
     public ResponseEntity<List<Appointment>> getAppointments(@RequestHeader("Authorization") String jwtToken){
         try{
             List<Appointment> appointmentList = appointmentService.findAppointments(jwtToken);
             return new ResponseEntity<>(appointmentList, HttpStatus.OK);
         } catch (SQLException e) {
-            e.printStackTrace();
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_GATEWAY);
         } catch (ThereIsNoSuchRoleException e){
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);

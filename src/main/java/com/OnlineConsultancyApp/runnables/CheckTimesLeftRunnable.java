@@ -61,14 +61,14 @@ public class CheckTimesLeftRunnable implements Runnable {
             Thread thread7 = new Thread(checkAppointmentsRunnable);
             Thread thread8 = new Thread(checkAppointmentsRunnable);
 
-            thread1.start();
-            thread2.start();
-            thread3.start();
-            thread4.start();
             thread5.start();
             thread6.start();
             thread7.start();
             thread8.start();
+            thread1.start();
+            thread2.start();
+            thread3.start();
+            thread4.start();
 
             try {
                 Thread.sleep(3600 * 1000);
@@ -77,6 +77,8 @@ public class CheckTimesLeftRunnable implements Runnable {
             }
             processedConsultantsIds = new ArrayList<>();
             consultantList = new ArrayList<>();
+            processedAppointmentsIds = new ArrayList<>();
+            appointmentList = new ArrayList<>();
         }
     }
 }

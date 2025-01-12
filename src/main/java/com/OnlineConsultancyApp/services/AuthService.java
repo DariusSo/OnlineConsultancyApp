@@ -84,6 +84,8 @@ public class AuthService {
             throw new NoAccessException();
         }
     }
+
+    //Authenticate consultant for answering to question
     public void authenticate(String token, long consultantIdFromMessage){
         long consultantId = JwtDecoder.decodedUserId(token);
         Roles role = JwtDecoder.decodedRole(token);
@@ -92,6 +94,7 @@ public class AuthService {
         }
     }
 
+    //Check if user is client
     public void authenticateClientRole(String token){
         Roles role = JwtDecoder.decodedRole(token);
         if(role == Roles.CONSULTANT){

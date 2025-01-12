@@ -56,19 +56,27 @@ public class AppointmentService {
         //Confirmation emails
         createAndSendEmail(consultant, client);
     }
+
     public void addAppointment(Appointment appointment, long userId) throws SQLException {
+
+        //Generate uuid
         UUID roomUuid = UUID.randomUUID();
 
+        //Set id and room uuid
         appointment.setUserId(userId);
         appointment.setRoomUuid(roomUuid);
+
+        //Add
         appointmentRepository.addAppointment(appointment);
     }
 
+    //Updates available times for consultant
     public void updateAvailableTimes(String availableTimes, LocalDateTime appointmentTime, long consultantId) throws JsonProcessingException, SQLException {
         String updatedDateAndTimeList = removeDateFromList(availableTimes, appointmentTime);
         consultantService.updateAvailableTime(updatedDateAndTimeList, consultantId);
     }
 
+    //Sends confirmation email to RabbitMQ
     public void createAndSendEmail(Consultant consultant, Client client) throws Exception {
         String clientMessage = "Appointment with " + consultant.getFirstName() + " " + consultant.getLastName() + " created. Waiting for approval.";
         String consultantMessage = client.getFirstName() + " " + client.getLastName() + " created an appointment with you, please confirm.";
@@ -208,9 +216,10 @@ public class AppointmentService {
         return appointmentRepository.getAppointmentsList();
     }
 
+    //Check if it is less then 5min to appointment to let connect
     public boolean connectToAppointment(UUID roomUuid) throws SQLException {
         Appointment appointment = appointmentRepository.getAppointmentsRoomUuid(roomUuid);
-        long difference = Duration.between(LocalDateTime.now(), appointment.getTimeAndDate()).toMinutes();
+        long difference = Duration.between(LocalDateTime.now(), appointment.getTimeAndDate().minusHours(1)).toMinutes();
         return difference <= 5;
     }
 

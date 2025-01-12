@@ -22,7 +22,7 @@ public class ClientController {
     ClientService clientService;
 
     @PutMapping("/edit")
-    public ResponseEntity<String> editConsultant(@RequestHeader("Authorization") String token, @RequestBody Client client){
+    public ResponseEntity<String> editClient(@RequestHeader("Authorization") String token, @RequestBody Client client){
         try{
             clientService.editClient(token, client);
             return new ResponseEntity<>("Success", HttpStatus.OK);

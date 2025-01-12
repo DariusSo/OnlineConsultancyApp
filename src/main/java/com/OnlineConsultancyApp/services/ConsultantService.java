@@ -55,6 +55,7 @@ public class ConsultantService {
         dealWithRedisCache(id, consultant);
     }
 
+    //to update info in cached consultants
     public void dealWithRedisCache(long id, Consultant consultant) throws IOException, ClassNotFoundException, SQLException {
         List<Consultant> consultantList = redisCacheService.getNewConsultants();
         int i = 0;

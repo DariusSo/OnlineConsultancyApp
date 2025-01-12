@@ -33,15 +33,6 @@ public class StripeService {
     @Value("${stripe.api.key}")
     private String stripeApiKey;
 
-//    @Value("${stripe.api.key}")
-//    private String stripeApiKey;
-
-
-//    @PostConstruct
-//    public void init() {
-//        Stripe.apiKey = stripeApiKey;
-//    }
-
     public PaymentIntent createPaymentIntent(Long amount, String currency) throws StripeException {
         PaymentIntentCreateParams params =
                 PaymentIntentCreateParams.builder()
@@ -93,6 +84,8 @@ public class StripeService {
         Session session = Session.create(params);
         //Adding Stripe session id for refunds
         appointmentService.addStripeSessionId(session.getId(), uuid);
+        //New thread which waits 30min, then deletes appointment if not paid
+        appointmentService.deleteAppointmentAfter30min(appointment.getId(), consultant.getAvailableTime(), appointment.getTimeAndDate(), consultant.getId());
         return session;
     }
 

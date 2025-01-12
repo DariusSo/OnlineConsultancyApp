@@ -36,7 +36,6 @@ public class StripeContoller {
             responseData.put("id", session.getId());
             return ResponseEntity.ok(responseData);
         } catch (StripeException | SQLException e) {
-            e.printStackTrace();
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
@@ -44,7 +43,6 @@ public class StripeContoller {
             return ResponseEntity.status(403).body(new HashMap<>());
         }
         catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -58,7 +56,6 @@ public class StripeContoller {
         } catch (TooLateException e){
             return new ResponseEntity<>("Nice try", HttpStatus.I_AM_A_TEAPOT);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseEntity<>("Stripe or SQL", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
