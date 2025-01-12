@@ -13,7 +13,7 @@
 
 [AdvisorFlow](https://advisorflow.dariussongaila.dev) is my final project for the Vilnius Coding School Java course. Its primary feature is connecting users with experts who can answer their questions through Chat and Video Chat. Additionally, it offers the ability to post questions and receive answers that are visible to everyone, fostering a shared knowledge base for the community.
 
-![AdvisorFlow](./imgread/Banner.png)
+![AdvisorFlow](./imgread/Banner.PNG)
 
 ## **Technical Stack**
 | **Category**          | **Technology**                          |
@@ -259,7 +259,7 @@ Ensure the following are installed on your server:
    - Fill everything in application.properties
   
     ![Navbar](./imgread/properties.PNG)
-    
+
    - Install **Supervisor**:
      ```bash
      sudo apt install supervisor -y
