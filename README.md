@@ -102,12 +102,12 @@ Ensure the following software is installed on your local machine:
 4. **Clone Repositories**
    - Clone the backend repository:
      ```bash
-     git clone https://github.com/username/AdvisorFlow-backend.git
+     git clone https://github.com/DariusSo/OnlineConsultancyApp.git
      cd AdvisorFlow-backend
      ```
    - Clone the frontend repository:
      ```bash
-     git clone https://github.com/username/AdvisorFlow-frontend.git
+     git clone https://github.com/DariusSo/ConsultancyAppFront.git
      cd AdvisorFlow-frontend
      ```
 
