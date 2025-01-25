@@ -9,7 +9,7 @@
 ![Coturn](https://img.shields.io/badge/Server-Coturn-purple)
 ![ChatGPT](https://img.shields.io/badge/AI-ChatGPT-yellow)
 
-⭐ **Feel free to cantact me!**
+⭐ **Feel free to contact me!**
 
 [AdvisorFlow](https://advisorflow.dariussongaila.dev) is my final project for the Vilnius Coding School Java course. Its primary feature is connecting users with experts who can answer their questions through Chat and Video Chat. Additionally, it offers the ability to post questions and receive answers that are visible to everyone, fostering a shared knowledge base for the community.
 
